@@ -11,7 +11,9 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-webtoolkitex="^0.0.23"
+flask="*"
+#webtoolkitex="^0.0.24"
+linkarchivetools="^0.0.56"
 
 [tool.poetry.group.dev.dependencies]
 black = "^25.9.0"
