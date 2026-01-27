@@ -2,144 +2,24 @@
 Simple RSS reader
 """
 from flask import Flask, render_template_string, jsonify
-from sqlalchemy import create_engine
+import threading
 
-from webtoolkit import BaseUrl
-from linkarchivetools.utils.reflected import (
-   ReflectedEntryTable,
-   ReflectedSourceTable,
-   ReflectedTable,
-)
+from src.taskrunner import TaskRunner
+from src.dbconnection import DbConnection
 
 
-sources = [
+init_sources = [
         'https://www.youtube.com/feeds/videos.xml?channel_id=UCJ0-OtVpF0wOKEqT2Z1HEtA',
         'https://www.youtube.com/feeds/videos.xml?channel_id=UCQG4cX86zZ51IU2cerZgPSA',
 ]
 
 
-class Connection(object):
-    def __init__(self, db_file):
-        self.db_file = db_file
-
-        self.engine = create_engine(f"sqlite:///{self.db_file}")
-        self.connection = self.engine.connect()
-
-        self.entries_table = ReflectedEntryTable(engine=self.engine, connection=self.connection)
-        self.sources_table = ReflectedSourceTable(engine=self.engine, connection=self.connection)
-
-    def truncate(self):
-        self.entries_table.truncate()
-        self.sources_table.truncate()
-
-        table = ReflectedTable(engine=self.engine, connection=self.connection)
-        table.vacuum()
-
-    def close(self):
-        if self.connection:
-            self.connection.close()
-            self.connection = None
-
-
-class Runner(object):
-    def __init__(self, connection):
-        self.connection = connection
-
-    def run_item(self, source):
-        url = BaseUrl(url=source)
-        response = url.get_response()
-        if response.is_valid():
-            source_properties = url.get_properties()
-            self.add_source(source, source_properties)
-
-            self.remove_source_entries(source)
-
-            #self.responses[source] = response
-            entries = url.get_entries()
-            for entry in entries:
-                self.add_entry(source, entry)
-
-    def remove_source_entries(source):
-        """
-        TODO Remove all entries with source_url = source
-        """
-        pass
-
-    def add_source(self, source, source_properties):
-        link = source_properties["link"]
-
-        if self.connection.sources_table.is_url(link):
-            return
-
-        title = source_properties.get("title", "")
-        if not title:
-            title = ""
-        language = source_properties.get("language", "")
-        if not language:
-            language = ""
-
-        properties = {
-               "url": source,
-               "enabled" : True,
-               "source_type" : "",
-               "title" : title,
-               "category_name": "",
-               "subcategory_name": "",
-               "export_to_cms": False,
-               "remove_after_days": 5,
-               "language": language,
-               "age": 0,
-               "fetch_period": 3600,
-               "auto_tag": "",
-               "entries_backgroundcolor_alpha": 1.0,
-               "entries_backgroundcolor": "",
-               "entries_alpha": 1.0,
-               "proxy_location": "",
-               "auto_update_favicon":False,
-               "xpath": "",
-       }
-
-        self.connection.sources_table.insert_json(properties)
-
-    def add_entry(self, source, entry):
-        if self.connection.entries_table.is_entry_link(entry["link"]):
-            return
-
-        entry["source_url"] = source
-
-        if "source" in entry:
-            del entry["source"]
-        if "feed_entry" in entry:
-            del entry["feed_entry"]
-        if "link_canonical" in entry:
-            del entry["link_canonical"]
-        if "tags" in entry:
-            del entry["tags"]
-
-        self.connection.entries_table.insert_entry_json(entry)
-
-    def on_done(self, response):
-        pass
-
-    def start(self):
-        for source in sources:
-            self.run_item(source)
-
-    def print(self):
-        for entry in self.connection.entries_table.get_entries():
-            self.print_entry(entry)
-
-    def print_entry(self, entry):
-        print(entry.title)
-        print(entry.link)
-
-
 app = Flask(__name__)
-connection = Connection("table.db")
-runner = Runner(connection)
+connection = DbConnection("table.db")
+runner = TaskRunner(connection)
 
 
-HTML_TEMPLATE = """
+ENTRIES_LIST_TEMPLATE = """
 <!doctype html>
 <html>
 <head>
@@ -170,13 +50,106 @@ HTML_TEMPLATE = """
 </html>
 """
 
+SOURCES_LIST_TEMPLATE = """
+<!doctype html>
+<html>
+<head>
+    <title>Sources</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        ul { list-style-type: none; padding-left: 0; }
+        li { margin-bottom: 12px; }
+        a { color: #1a0dab; text-decoration: none; }
+        .title { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Sources</h1>
+
+    <ul>
+        {% for source in sources %}
+            <li>
+                <div class="title">{{ source.title or "Untitled source" }}</div>
+                <a href="{{ source.url }}" target="_blank">
+                    {{ source.url }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+"""
+
+SET_SOURCES_TEMPLATE = """
+<!doctype html>
+<html>
+<head>
+    <title>Configure Sources</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        textarea { width: 100%; height: 200px; }
+        button { margin-top: 10px; padding: 10px 20px; }
+    </style>
+</head>
+<body>
+    <h1>Define Sources</h1>
+
+    <form method="post">
+        <p>One source URL per line:</p>
+        <textarea name="sources">{% for s in sources %}{{ s }}\n{% endfor %}</textarea>
+        <br>
+        <button type="submit">Save Sources</button>
+    </form>
+</body>
+</html>
+"""
+
 
 @app.route("/")
 def index():
     entries = list(connection.entries_table.get_entries())
 
-    return render_template_string(HTML_TEMPLATE, entries=entries)
+    return render_template_string(ENTRIES_LIST_TEMPLATE, entries=entries)
 
+
+@app.route("/entries")
+def index():
+    entries = list(connection.entries_table.get_entries())
+
+    return render_template_string(ENTRIES_LIST_TEMPLATE, entries=entries)
+
+
+@app.route("/sources")
+def list_sources():
+    sources = list(connection.sources_table.get_sources())
+    return render_template_string(SOURCES_LIST_TEMPLATE, sources=sources)
+
+
+def read_sources_input(input_text):
+    sources = [
+        line.strip()
+        for line in input_text.splitlines()
+        if line.strip()
+    ]
+
+    return sources
+
+
+@app.route("/set-sources", methods=["GET", "POST"])
+def configure_sources():
+    if request.method == "POST":
+        raw_text = request.form.get("sources", "")
+
+        sources = read_sources_input(raw_text)
+
+        runner.set_sources(sources)
+
+        return redirect(url_for("configure_sources"))
+
+    sources = connection.sources_table.get_sources()
+    return render_template_string(SET_SOURCES_TEMPLATE, sources=sources)
+
+#### JSON
 
 @app.route("/api/entries")
 def api_entries():
@@ -192,7 +165,27 @@ def api_entries():
     return jsonify(json_data)
 
 
+@app.route("/api/sources")
+def api_sources():
+    json_data = []
+    sources = list(connection.sources_table.get_sources())
+
+    for source in sources:
+        json_data.append({
+            "url": source.url,
+            "title": source.title,
+        })
+
+    return jsonify(json_data)
+
+
 if __name__ == "__main__":
-    runner.start()
+    thread = threading.Thread(
+        target=runner.start,
+        args=(),
+        daemon=True
+    )
+
+    thread.start()
 
     app.run(debug=True)
