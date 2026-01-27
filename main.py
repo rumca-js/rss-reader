@@ -151,6 +151,7 @@ SOURCES_LIST_TEMPLATE = """
     <ul>
         {% for source in sources %}
             <li>
+                <img src="{{source.favicon}}"/>
                 <div class="title">{{ source.title or "Untitled source" }}</div>
                 <a href="{{ source.url }}" target="_blank">
                     {{ source.url }}

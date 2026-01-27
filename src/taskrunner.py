@@ -38,13 +38,11 @@ class TaskRunner(object):
         title = ""
         language = ""
         favicon = ""
-        description = ""
 
         if source_properties:
             title = source_properties.get("title", "")
             language = source_properties.get("language", "")
             favicon = source_properties.get("thumbnail", "")
-            description = source_properties.get("description", "")
 
         if not title:
             title = ""
@@ -52,8 +50,6 @@ class TaskRunner(object):
             language = ""
         if not favicon:
             favicon = ""
-        if not description:
-            description = ""
 
         source_iter = self.connection.sources_table.get_where({"url":link})
         source = next(source_iter, None)
@@ -64,7 +60,6 @@ class TaskRunner(object):
             data = {}
             data["title"] = title
             data["favicon"] = favicon
-            data["description"] = favicon
             data["language"] = favicon
 
             self.connection.sources_table.update_json_data(source.id, data)
