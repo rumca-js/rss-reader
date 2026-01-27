@@ -6,12 +6,15 @@ class TaskRunner(object):
     def __init__(self, connection):
         self.connection = connection
 
+        #self.connection.entries_table.truncate()
+        #self.connection.sources_table.truncate()
+
     def check_source(self, source):
-        url = self.get_source_url(source)
+        url = self.get_source_url(source.url)
         response = url.get_response()
         if response.is_valid():
             source_properties = url.get_properties()
-            self.set_source(source, source_properties)
+            self.set_source(source.url, source_properties)
 
             self.remove_source_entries(source)
 
@@ -27,26 +30,48 @@ class TaskRunner(object):
         """
         TODO Remove all entries with source_url = source
         """
-        pass
+        self.connection.entries_table.delete_where({"source_url" : source.url})
 
-    def set_source(self, source, source_properties=None):
-        link = source_properties["link"]
+    def set_source(self, source_url, source_properties=None):
+        link = source_url
 
-        if self.connection.sources_table.exists(url=link):
+        title = ""
+        language = ""
+        favicon = ""
+        description = ""
+
+        if source_properties:
+            title = source_properties.get("title", "")
+            language = source_properties.get("language", "")
+            favicon = source_properties.get("thumbnail", "")
+            description = source_properties.get("description", "")
+
+        if not title:
+            title = ""
+        if not language:
+            language = ""
+        if not favicon:
+            favicon = ""
+        if not description:
+            description = ""
+
+        source_iter = self.connection.sources_table.get_where({"url":link})
+        source = next(source_iter, None)
+        if source:
             """
             TODO update source
             """
+            data = {}
+            data["title"] = title
+            data["favicon"] = favicon
+            data["description"] = favicon
+            data["language"] = favicon
+
+            self.connection.sources_table.update_json_data(source.id, data)
             return
 
-        title = source_properties.get("title", "")
-        if not title:
-            title = ""
-        language = source_properties.get("language", "")
-        if not language:
-            language = ""
-
         properties = {
-               "url": source,
+               "url": link,
                "enabled" : True,
                "source_type" : "",
                "title" : title,
@@ -64,6 +89,7 @@ class TaskRunner(object):
                "proxy_location": "",
                "auto_update_favicon":False,
                "xpath": "",
+               "favicon": favicon,
        }
 
         self.connection.sources_table.insert_json(properties)
@@ -72,7 +98,7 @@ class TaskRunner(object):
         if self.connection.entries_table.exists(link=entry["link"]):
             return
 
-        entry["source_url"] = source
+        entry["source_url"] = source.url
 
         if "source" in entry:
             del entry["source"]
@@ -83,11 +109,16 @@ class TaskRunner(object):
         if "tags" in entry:
             del entry["tags"]
 
-        self.connection.entries_table.insert_json(entry)
+        try:
+            self.connection.entries_table.insert_json(entry)
+        except Exception as E:
+            print(E)
+            print(entry)
+            raise
 
     def set_sources(self, sources):
-        for source in sources:
-            self.set_source(source)
+        for source_url in sources:
+            self.set_source(source_url)
 
     def on_done(self, response):
         pass
@@ -111,7 +142,7 @@ class TaskRunner(object):
                     continue
 
                 print(f"{index}/{source_count} {source.url} {source.title}: Reading")
-                self.check_source(source.url)
+                self.check_source(source)
                 print(f"{index}/{source_count} {source.url} {source.title}: Reading DONE")
                 time.sleep(1)
 
