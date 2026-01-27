@@ -103,12 +103,16 @@ class TaskRunner(object):
         print("Starting reading")
 
         while True:
+            source_count = self.connection.sources_table.count()
             sources = self.connection.sources_table.get_sources()
 
-            for source in sources:
-                print(f"{source.url} {source.title}: Reading")
+            for index, source in enumerate(sources):
+                if not source.enabled:
+                    continue
+
+                print(f"{index}/{source_count} {source.url} {source.title}: Reading")
                 self.check_source(source.url)
-                print(f"{source.url} {source.title}: Reading DONE")
+                print(f"{index}/{source_count} {source.url} {source.title}: Reading DONE")
                 time.sleep(1)
 
             SLEEP_TIME_6h = 27600
