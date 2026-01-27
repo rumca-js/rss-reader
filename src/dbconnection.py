@@ -10,7 +10,7 @@ class DbConnection(object):
     def __init__(self, db_file):
         self.db_file = db_file
 
-        self.engine = create_engine(f"sqlite:///{self.db_file}")
+        self.engine = create_engine(f"sqlite:///data/{self.db_file}")
         self.connection = self.engine.connect()
 
         self.entries_table = ReflectedEntryTable(engine=self.engine, connection=self.connection)
