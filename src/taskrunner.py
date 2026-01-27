@@ -23,7 +23,7 @@ class TaskRunner(object):
         url = BaseUrl(url=source)
         return url
 
-    def remove_source_entries(source):
+    def remove_source_entries(self, source):
         """
         TODO Remove all entries with source_url = source
         """
@@ -32,7 +32,7 @@ class TaskRunner(object):
     def set_source(self, source, source_properties=None):
         link = source_properties["link"]
 
-        if self.connection.sources_table.is_url(link):
+        if self.connection.sources_table.exists(url=link):
             """
             TODO update source
             """
@@ -69,7 +69,7 @@ class TaskRunner(object):
         self.connection.sources_table.insert_json(properties)
 
     def add_entry(self, source, entry):
-        if self.connection.entries_table.is_entry_link(entry["link"]):
+        if self.connection.entries_table.exists(link=entry["link"]):
             return
 
         entry["source_url"] = source
@@ -83,7 +83,7 @@ class TaskRunner(object):
         if "tags" in entry:
             del entry["tags"]
 
-        self.connection.entries_table.insert_entry_json(entry)
+        self.connection.entries_table.insert_json(entry)
 
     def set_sources(self, sources):
         for source in sources:
@@ -104,10 +104,12 @@ class TaskRunner(object):
 
         while True:
             sources = self.connection.sources_table.get_sources()
+
             for source in sources:
-                print(f"{source}: Reading")
-                self.check_source(source)
-                print(f"{source}: Reading DONE")
+                print(f"{source.url} {source.title}: Reading")
+                self.check_source(source.url)
+                print(f"{source.url} {source.title}: Reading DONE")
+                time.sleep(1)
 
             SLEEP_TIME_6h = 27600
             time.sleep(SLEEP_TIME_6h)

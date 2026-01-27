@@ -1,8 +1,9 @@
 """
 Simple RSS reader
 """
-from flask import Flask, render_template_string, jsonify
+import os
 import threading
+from flask import Flask, render_template_string, jsonify
 
 from src.taskrunner import TaskRunner
 from src.dbconnection import DbConnection
@@ -113,7 +114,7 @@ def index():
 
 
 @app.route("/entries")
-def index():
+def entries():
     entries = list(connection.entries_table.get_entries())
 
     return render_template_string(ENTRIES_LIST_TEMPLATE, entries=entries)
@@ -180,12 +181,13 @@ def api_sources():
 
 
 if __name__ == "__main__":
-    thread = threading.Thread(
-        target=runner.start,
-        args=(),
-        daemon=True
-    )
+    if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+        thread = threading.Thread(
+            target=runner.start,
+            args=(),
+            daemon=True
+        )
 
-    thread.start()
+        thread.start()
 
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
