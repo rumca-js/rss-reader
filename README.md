@@ -24,3 +24,11 @@ No writing, starring, tagging, or social features. Just read.
  - No frontend framework required
  - Fast - Minimal processing. No unnecessary abstractions
  - Read-only - Feeds and entries only. No mutation beyond fetching and storing
+
+# Endpoints
+
+Allows to integrate your project with YAFR.
+
+ - /api/entries - returns JSON about entries
+ - /api/sources - returns JSON about sources
+ - /api/config - configuration
