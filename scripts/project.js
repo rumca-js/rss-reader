@@ -4,9 +4,11 @@ let entries_length = 0;
 let search_suggestions = [];
 
 
-
 function getFileName() {
     let file_name = getQueryParam('file') || getDefaultFileName();
+    if (file_name == null) {
+	return;
+    }
 
     let adir = getDefaultFileLocation();
 
@@ -17,11 +19,6 @@ function getFileName() {
         file_name = adir + file_name
 
     return file_name;
-}
-
-
-function getEntryLocalLink(entry) {
-    return `?entry_id=${entry.id}`;
 }
 
 
@@ -112,11 +109,22 @@ function performSearch() {
     currentUrl.searchParams.set('search', userInput);
     window.history.pushState({}, '', currentUrl);
 
-    if (isWorkerNeeded(file_name)) {
-       return performSearchDb();
+    let page_num = parseInt(getQueryParam("page")) || 1;
+
+    if (file_name) {
+      if (isWorkerNeeded(file_name)) {
+         return performSearchDb();
+      }
+      else {
+         return performSearchJSON();
+      }
     }
-    else {
-       return performSearchJSON();
+    else
+    {
+       getEntriesJson(function(data) {
+          object_list_data = data;
+          fillListData();
+       }, page=page_num, search=userInput);
     }
 }
 
@@ -222,12 +230,28 @@ async function Initialize() {
 
     $('#searchInput').prop('disabled', true);
 
-    if (isWorkerNeeded(file_name)) {
-       return await InitializeForDb();
+    console.log("On system ready");
+    onSystemReady();
+
+    if (getDefaultFileName()) {
+      if (isWorkerNeeded(file_name)) {
+         return await InitializeForDb();
+      }
+      else {
+         return await InitializeForJSON();
+      }
     }
-    else {
-       return await InitializeForJSON();
-    }
+}
+
+
+function getEntriesJson(callback=null, page=1, search=null) {
+   let url_location = getEntryAPI();
+   let url_address = `${url_location}?p=${page}&search=${search}`;
+   getDynamicJson(url_address, function(data) {
+       if (callback) {
+          callback(data);
+       }
+   });
 }
 
 

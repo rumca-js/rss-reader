@@ -1,7 +1,9 @@
 
-def entry_to_json(entry):
+def entry_to_json(entry, with_id=False):
     json_entry = {}
 
+    if with_id:
+        json_entry["id"] = entry.id
     json_entry["title"] = entry.title
     json_entry["description"] = entry.description
     json_entry["link"] = entry.link
@@ -37,7 +39,7 @@ def entry_to_json(entry):
     return json_entry
 
 
-def source_to_json(source):
+def source_to_json(source, with_id=False):
     json_data = {
        "link" : source.url,
        "title" : source.title,
@@ -45,4 +47,6 @@ def source_to_json(source):
        "language" : source.language,
        "favicon" : source.favicon,
     }
+
+    json_data["id"] = source.id
     return json_data

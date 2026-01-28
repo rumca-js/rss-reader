@@ -1,4 +1,5 @@
 import time
+from datetime import datetime
 from webtoolkit import BaseUrl
 
 
@@ -104,6 +105,8 @@ class TaskRunner(object):
         if "tags" in entry:
             del entry["tags"]
 
+        entry["date_created"] = datetime.now()
+
         try:
             self.connection.entries_table.insert_json(entry)
         except Exception as E:
@@ -111,7 +114,7 @@ class TaskRunner(object):
             print(entry)
             raise
 
-    def set_sources(self, sources):
+    def add_sources(self, sources):
         for source_url in sources:
             self.set_source(source_url)
 
@@ -142,6 +145,7 @@ class TaskRunner(object):
                 time.sleep(1)
 
             SLEEP_TIME_6h = 27600
+            print(f"Sleeping for {SLEEP_TIME_6h}s")
             time.sleep(SLEEP_TIME_6h)
 
     def print(self):

@@ -458,6 +458,44 @@ async function unPackFileJSONS(zip) {
 }
 
 
+const getDynamicJsonRequestTracker = {};
+function getDynamicJson(url_address, callback = null, errorInHtml = false, retry=true, timeout_s=20000) {
+    // Abort previous request if needed
+    if (getDynamicJsonRequestTracker[url_address]?.xhr) {
+        getDynamicJsonRequestTracker[url_address].xhr.abort();
+    }
+
+    const requestId = (getDynamicJsonRequestTracker[url_address]?.id || 0) + 1;
+    getDynamicJsonRequestTracker[url_address] = { id: requestId };
+
+    const xhr = $.ajax({
+        url: url_address,
+        type: 'GET',
+        timeout: timeout_s,
+        success: function(data) {
+            if (getDynamicJsonRequestTracker[url_address].id === requestId) {
+                callback?.(data);
+            }
+        },
+        error: function(xhr, status, error) {
+          if (retry) {
+            if (status === 'timeout') {
+                console.warn(`Timeout on ${url_address}. Retrying...`);
+                if (getDynamicJsonRequestTracker[url_address].id === requestId) {
+                    getDynamicJson(url_address, callback, errorInHtml);
+                }
+            } else {
+                console.error(`Error fetching ${url_address}:`, status, error);
+            }
+          }
+        }
+    });
+
+    getDynamicJsonRequestTracker[url_address].xhr = xhr;
+}
+
+
+
 /*
 module.exports = {
     UrlLocation,
