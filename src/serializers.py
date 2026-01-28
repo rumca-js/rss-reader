@@ -1,3 +1,6 @@
+def iso_z(dt):
+    if dt:
+        return dt.isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
 def entry_to_json(entry, with_id=False):
     json_entry = {}
@@ -7,11 +10,11 @@ def entry_to_json(entry, with_id=False):
     json_entry["title"] = entry.title
     json_entry["description"] = entry.description
     json_entry["link"] = entry.link
-    json_entry["date_created"] = entry.date_created
-    json_entry["date_published"] = entry.date_published
-    json_entry["date_dead_since"] = entry.date_dead_since
-    json_entry["date_update_last"] = entry.date_update_last
-    json_entry["date_last_modified"] = entry.date_last_modified
+    json_entry["date_created"] = iso_z(entry.date_created)
+    json_entry["date_published"] = iso_z(entry.date_published)
+    json_entry["date_dead_since"] = iso_z(entry.date_dead_since)
+    json_entry["date_update_last"] = iso_z(entry.date_update_last)
+    json_entry["date_last_modified"] = iso_z(entry.date_last_modified)
     json_entry["bookmarked"] = entry.bookmarked
     json_entry["permanent"] = entry.permanent
     json_entry["author"] = entry.author

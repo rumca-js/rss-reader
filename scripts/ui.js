@@ -207,7 +207,9 @@ function getNavSearchForm() {
 
 
 function getNavHomeButton() {
-    return `<a id="homeButton" class="d-flex align-items-right px-3 mb-2" href="#">🏠</a>`;
+    let home_location = getHomeLocation();
+    //return `<a id="homeButton" class="d-flex align-items-right px-3 mb-2" href="#">🏠</a>`;
+    return `<a id="homeButton" class="d-flex align-items-right px-3 mb-2" href="${home_location}">🏠</a>`;
 }
 
 

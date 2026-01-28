@@ -35,6 +35,11 @@ function getEntryLocalLink(entry) {
 }
 
 
+function getHomeLocation() {
+    return "/";
+}
+
+
 function getFileList() {
     return [
     ];

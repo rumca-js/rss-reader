@@ -36,6 +36,11 @@ function getDefaultFileLocation() {
 }
 
 
+function getHomeLocation() {
+    return "#";
+}
+
+
 function getFileVersion() {
     /* Forces refresh of the file */
     return "71";

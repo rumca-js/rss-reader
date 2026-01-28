@@ -7,8 +7,9 @@ class TaskRunner(object):
     def __init__(self, connection):
         self.connection = connection
 
-        #self.connection.entries_table.truncate()
-        #self.connection.sources_table.truncate()
+    def truncate(self):
+        self.connection.entries_table.truncate()
+        self.connection.sources_table.truncate()
 
     def check_source(self, source):
         url = self.get_source_url(source.url)
@@ -144,9 +145,12 @@ class TaskRunner(object):
                 print(f"{index}/{source_count} {source.url} {source.title}: Reading DONE")
                 time.sleep(1)
 
-            SLEEP_TIME_6h = 27600
-            print(f"Sleeping for {SLEEP_TIME_6h}s")
-            time.sleep(SLEEP_TIME_6h)
+            if source_count > 0:
+                SLEEP_TIME_6h = 27600
+                print(f"Sleeping for {SLEEP_TIME_6h}s")
+                time.sleep(SLEEP_TIME_6h)
+            else:
+                time.sleep(10)
 
     def print(self):
         for entry in self.connection.entries_table.get_entries():
