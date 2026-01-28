@@ -1,18 +1,7 @@
 PAGINATION="""
 <div class="pagination">
-    {% if page > 1 %}
-        <a href="{{ url_for('api_entries') }}?p={{ page - 1 }}">« Previous</a>
-    {% else %}
-        <span>« Previous</span>
-    {% endif %}
-
-    <span>Page {{ page }}</span>
-
-    {% if has_next %}
-        <a href="{{ url_for('api_entries') }}?p={{ page + 1 }}">Next »</a>
-    {% else %}
-        <span>Next »</span>
-    {% endif %}
+    <a href="{{ entries_page }}?p={{ prev_page }}">« Previous</a>
+    <a href="{{ entries_page }}?p={{ next_page }}">Next »</a>
 </div>
 """
 

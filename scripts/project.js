@@ -97,6 +97,21 @@ function performSearchDb() {
 }
 
 
+function performSearchAPI() {
+    let page_num = parseInt(getQueryParam("page")) || 1;
+    const userInput = $("#searchInput").val();
+    if (userInput.trim() != "") {
+        document.title = userInput;
+    }
+
+    getEntriesJson(function(data) {
+       object_list_data = data;
+       fillListData();
+       $('#pagination').html(getPaginationSimpleText());
+    }, page=page_num, search=userInput);
+}
+
+
 function performSearch() {
     let file_name = getFileName();
 
@@ -109,8 +124,6 @@ function performSearch() {
     currentUrl.searchParams.set('search', userInput);
     window.history.pushState({}, '', currentUrl);
 
-    let page_num = parseInt(getQueryParam("page")) || 1;
-
     if (file_name) {
       if (isWorkerNeeded(file_name)) {
          return performSearchDb();
@@ -121,10 +134,7 @@ function performSearch() {
     }
     else
     {
-       getEntriesJson(function(data) {
-          object_list_data = data;
-          fillListData();
-       }, page=page_num, search=userInput);
+        return performSearchAPI();
     }
 }
 
