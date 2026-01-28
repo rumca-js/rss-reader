@@ -21,17 +21,7 @@ let entries_dead_alpha=0.5;
 
 
 function getDefaultFileName() {
-    return;
-}
-
-
-function getEntryAPI() {
-   return `/api/entries`;
-}
-
-
-function getEntryLocalLink(entry) {
-    return `?entry_id=${entry.id}`;
+    return "table.db";
 }
 
 
