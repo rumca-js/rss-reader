@@ -54,11 +54,11 @@ INDEX_TEMPLATE = """
 <h1>Entrypoints</h1>
 <ul>
   <li><a href="/search">Search</a>
-  <li><a href="/entries">Entries</a>
   <li><a href="/sources">Sources</a>
-  <li><a href="/add-sources">Entries</a>
+  <li><a href="/add-sources">Add sources</a>
   <li><a href="/remove-source">Remove sources</a>
   <li><a href="/remove-all-sources">Remove all sources</a>
+  <li><a href="/entries">Entries</a>
   <li><a href="/remove-entry">Remove entry</a>
 </ul>
 </body>
