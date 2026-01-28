@@ -1,7 +1,7 @@
 PAGINATION="""
 <div class="pagination">
-    <a href="{{ entries_page }}?p={{ prev_page }}">« Previous</a>
-    <a href="{{ entries_page }}?p={{ next_page }}">Next »</a>
+    <a href="{{ entries_page }}?p={{ prev_page }}">&lt;</a>
+    <a href="{{ entries_page }}?p={{ next_page }}">&gt;</a>
 </div>
 """
 
@@ -140,7 +140,7 @@ SOURCES_LIST_TEMPLATE = """
     </style>
 </head>
 <body>
-    <h1>Sources</h1>
+    <h1>Sources {{sources_length}}</h1>
 
     <ul>
         {% for source in sources %}
@@ -153,6 +153,7 @@ SOURCES_LIST_TEMPLATE = """
             </li>
         {% endfor %}
     </ul>
+    {{pagination_text}}
 </body>
 </html>
 """

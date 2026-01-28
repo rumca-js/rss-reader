@@ -104,8 +104,23 @@ def list_sources():
     limit = pagination.get_limit()
     offset = pagination.get_offset()
 
+    page = pagination.get_page()
+    prev_page = page - 1
+    next_page = page + 1
+
+    pagination_text = "";
+    if page > 2:
+        pagination_text += '<a href="?p=1">|&lt;</a>';
+    pagination_text += f'<a href="?p={prev_page}">&lt;</a>';
+    pagination_text += f'<a href="?p={next_page}">&gt;</a>';
+
+    sources_len = connection.sources_table.count()
+
     sources = get_sources_for_request(limit, offset)
-    return render_template_string(SOURCES_LIST_TEMPLATE, sources=sources)
+    template_text = SOURCES_LIST_TEMPLATE
+    template_text = template_text.replace("{{pagination_text}}", pagination_text)
+
+    return render_template_string(template_text, sources=sources, sources_length=sources_len)
 
 
 def read_sources_input(input_text):
