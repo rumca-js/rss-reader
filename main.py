@@ -37,6 +37,35 @@ PAGINATION="""
 """
 
 
+INDEX_TEMPLATE = """
+<!doctype html>
+<html>
+<head>
+    <title>YouTube Feed Entries</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h2 { margin-top: 30px; }
+        ul { list-style-type: none; padding-left: 0; }
+        li { margin-bottom: 10px; }
+        a { text-decoration: none; color: #1a0dab; }
+    </style>
+</head>
+<body>
+<h1>Entrypoints</h1>
+<ul>
+  <li><a href="/search">Search</a>
+  <li><a href="/entries">Entries</a>
+  <li><a href="/sources">Sources</a>
+  <li><a href="/add-sources">Entries</a>
+  <li><a href="/remove-source">Remove sources</a>
+  <li><a href="/remove-all-sources">Remove all sources</a>
+  <li><a href="/remove-entry">Remove entry</a>
+</ul>
+</body>
+</html>
+"""
+
+
 ENTRIES_LIST_TEMPLATE = """
 <!doctype html>
 <html>
@@ -315,13 +344,7 @@ def get_sources_for_request(limit, offset):
 
 @app.route("/")
 def index():
-    pagination = PagePagination(request)
-    limit = pagination.get_limit()
-    offset = pagination.get_offset()
-
-    entries = get_entries_for_request(limit, offset)
-
-    return render_template_string(ENTRIES_LIST_TEMPLATE, entries=entries)
+    return render_template_string(INDEX_TEMPLATE)
 
 
 @app.route('/scripts/<path:filename>')
