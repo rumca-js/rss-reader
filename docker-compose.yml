@@ -1,6 +1,6 @@
 version: '3.7'
 services:
-  crawlerbuddy:
+  yafr:
     image: rozbujnik/yafr
     container_name: yafr
     build:
