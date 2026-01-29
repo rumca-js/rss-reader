@@ -11,6 +11,8 @@ def get_view(body, title=""):
 <html>
 <head>
     <title>{title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; }
         h2 { margin-top: 30px; }
