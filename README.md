@@ -16,6 +16,9 @@ YAFR focuses on:
 
 No writing, starring, tagging, or social features. Just read.
 
+Try it!
+ - https://hub.docker.com/r/rozbujnik/yafr
+
 # Features
 
  - SQLite database - Portable, easy to back up. Can be shared or copied between machines or tasks
