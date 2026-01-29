@@ -2,7 +2,7 @@ def iso_z(dt):
     if dt:
         return dt.isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
-def entry_to_json(entry, with_id=False):
+def entry_to_json(entry, with_id=False, source=None):
     json_entry = {}
 
     if with_id:
@@ -28,8 +28,12 @@ def entry_to_json(entry, with_id=False):
     json_entry["status_code"] = entry.status_code
     json_entry["thumbnail"] = entry.thumbnail
 
-    json_entry["source__title"] = ""
-    json_entry["source__url"] = ""
+    json_entry["source_title"] = ""
+    json_entry["source_url"] = entry.source_url
+    if source:
+        json_entry["source_title"] = source.title
+        json_entry["source"] = source_to_json(source)
+
     json_entry["backgroundcolor"] = None
     json_entry["alpha"] = 1.0
 
@@ -46,7 +50,6 @@ def source_to_json(source, with_id=False):
     json_data = {
        "link" : source.url,
        "title" : source.title,
-       "description" : source.description,
        "language" : source.language,
        "favicon" : source.favicon,
     }

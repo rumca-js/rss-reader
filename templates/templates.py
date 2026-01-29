@@ -29,7 +29,29 @@ INDEX_TEMPLATE = """
   <li><a href="/remove-all-sources">Remove all sources</a>
   <li><a href="/entries">Entries</a>
   <li><a href="/remove-entry">Remove entry</a>
+  <li><a href="/remove-all-entries">Remove all entries</a>
+  <li><a href="/stats">Stats</a>
 </ul>
+</body>
+</html>
+"""
+
+
+OK_TEMPLATE = """
+<!doctype html>
+<html>
+<head>
+    <title>YouTube Feed Entries</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h2 { margin-top: 30px; }
+        ul { list-style-type: none; padding-left: 0; }
+        li { margin-bottom: 10px; }
+        a { text-decoration: none; color: #1a0dab; }
+    </style>
+</head>
+<body>
+OK
 </body>
 </html>
 """
@@ -179,6 +201,27 @@ SET_SOURCES_TEMPLATE = """
         <br>
         <button type="submit">Save Sources</button>
     </form>
+</body>
+</html>
+"""
+
+
+STATS_TEMPLATE = """
+<!doctype html>
+<html>
+<head>
+    <title>Stats</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        textarea { width: 100%; height: 200px; }
+        button { margin-top: 10px; padding: 10px 20px; }
+    </style>
+</head>
+<body>
+{% for stat_name, stat_counter in stats.items() %}
+    <div>{{stat_name}} {{stat_counter}}</div>
+{% endfor %}
+
 </body>
 </html>
 """

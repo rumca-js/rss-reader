@@ -160,13 +160,44 @@ def api_entries():
     entries = get_entries_for_request(limit, offset)
 
     for entry in entries:
-        json_entry_data = entry_to_json(entry, with_id=True)
-        json_entries.append(json_entry_data)
+        if entry.source_id:
+            sources = connection.sources_table.get_where({"id" : entry.source_id})
+
+            entry_source = None
+            for source in sources:
+                entry_source = source
+                break
+            json_entry_data = entry_to_json(entry, with_id=True, source=entry_source)
+            json_entries.append(json_entry_data)
 
     json_data = {}
     json_data["entries"] = json_entries
 
     return jsonify(json_data)
+
+
+@app.route("/remove-all-entries")
+def remove_all_entries():
+    connection.entries_table.truncate()
+    return render_template_string(OK_TEMPLATE)
+
+
+@app.route("/remove-all-sources")
+def remove_all_sources():
+    connection.sources_table.truncate()
+    return render_template_string(OK_TEMPLATE)
+
+
+@app.route("/stats")
+def stats():
+    entries_len = connection.entries_table.count()
+    sources_len = connection.sources_table.count()
+
+    stats_map = {}
+    stats_map["Entries"] = entries_len
+    stats_map["Sources"] = sources_len
+
+    return render_template_string(STATS_TEMPLATE, stats=stats_map)
 
 
 @app.route("/api/sources")
@@ -192,6 +223,7 @@ if __name__ == "__main__":
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         entries_len = connection.entries_table.count()
         sources_len = connection.sources_table.count()
+
         print(f"Entries: {entries_len}")
         print(f"Sources: {sources_len}")
 

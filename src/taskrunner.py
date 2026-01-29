@@ -107,6 +107,7 @@ class TaskRunner(object):
             del entry["tags"]
 
         entry["date_created"] = datetime.now()
+        entry["source_id"] = source.id
 
         try:
             self.connection.entries_table.insert_json(entry)
