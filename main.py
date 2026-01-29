@@ -69,7 +69,8 @@ def get_sources_for_request(limit, offset):
 
 @app.route("/")
 def index():
-    return render_template_string(INDEX_TEMPLATE)
+    html_text = get_view(INDEX_TEMPLATE, title="YAFR - Yet another feed reader")
+    return render_template_string(html_text)
 
 
 @app.route('/scripts/<path:filename>')
@@ -90,7 +91,9 @@ def entries():
 
     entries = get_entries_for_request(limit, offset)
 
-    return render_template_string(ENTRIES_LIST_TEMPLATE, entries=entries)
+    html_text = get_view(ENTRIES_LIST_TEMPLATE, title="Entries")
+
+    return render_template_string(html_text, entries=entries)
 
 
 @app.route("/search")
@@ -120,7 +123,9 @@ def list_sources():
     template_text = SOURCES_LIST_TEMPLATE
     template_text = template_text.replace("{{pagination_text}}", pagination_text)
 
-    return render_template_string(template_text, sources=sources, sources_length=sources_len)
+    html_text = get_view(SOURCES_LIST_TEMPLATE, title="Sources")
+
+    return render_template_string(html_text, sources=sources, sources_length=sources_len)
 
 
 def read_sources_input(input_text):
@@ -143,7 +148,8 @@ def configure_sources():
         runner.add_sources(sources)
 
     sources = []
-    return render_template_string(SET_SOURCES_TEMPLATE, sources=sources)
+    html_text = get_view(SET_SOURCES_TEMPLATE, title="Add sources")
+    return render_template_string(html_text, sources=sources)
 
 #### JSON
 
@@ -179,13 +185,40 @@ def api_entries():
 @app.route("/remove-all-entries")
 def remove_all_entries():
     connection.entries_table.truncate()
-    return render_template_string(OK_TEMPLATE)
+
+    html_text = get_view(OK_TEMPLATE, title="Remove all entries")
+    return render_template_string(html_text)
 
 
 @app.route("/remove-all-sources")
 def remove_all_sources():
     connection.sources_table.truncate()
-    return render_template_string(OK_TEMPLATE)
+    html_text = get_view(OK_TEMPLATE, title="Remove all sources")
+    return render_template_string(html_text)
+
+
+@app.route("/remove-source")
+def remove_source():
+    source_id = request.args.get("id")
+
+    source = connection.sources_table.get(id=source_id)
+    if source:
+        connection.entries_table.delete_where({"source_id" : source.id})
+
+    html_text = get_view(OK_TEMPLATE, title="Remove source")
+    return render_template_string(html_text)
+
+
+@app.route("/remove-entry")
+def remove_entry():
+    entry_id = request.args.get("id")
+
+    entry = connection.entries_table.get(id=entry_id)
+    if source:
+        connection.entries_table.delete_where({"id" : entry.id})
+
+    html_text = get_view(OK_TEMPLATE, title="Remove entry")
+    return render_template_string(html_text)
 
 
 @app.route("/stats")
@@ -197,7 +230,8 @@ def stats():
     stats_map["Entries"] = entries_len
     stats_map["Sources"] = sources_len
 
-    return render_template_string(STATS_TEMPLATE, stats=stats_map)
+    html_text = get_view(STATS_TEMPLATE, title="Stats")
+    return render_template_string(html_text, stats=stats_map)
 
 
 @app.route("/api/sources")

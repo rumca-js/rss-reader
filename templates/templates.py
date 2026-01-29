@@ -5,21 +5,32 @@ PAGINATION="""
 </div>
 """
 
-
-INDEX_TEMPLATE = """
+def get_view(body, title=""):
+    text = """
 <!doctype html>
 <html>
 <head>
-    <title>YouTube Feed Entries</title>
+    <title>{title}</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; }
         h2 { margin-top: 30px; }
         ul { list-style-type: none; padding-left: 0; }
         li { margin-bottom: 10px; }
         a { text-decoration: none; color: #1a0dab; }
+        textarea { width: 100%; height: 200px; }
+        button { margin-top: 10px; padding: 10px 20px; }
     </style>
 </head>
 <body>
+   {body}
+</body>
+</html>
+"""
+    text = text.replace("{title}", title)
+    return text.replace("{body}", body)
+
+
+INDEX_TEMPLATE = """
 <h1>Entrypoints</h1>
 <ul>
   <li><a href="/search">Search</a>
@@ -32,8 +43,6 @@ INDEX_TEMPLATE = """
   <li><a href="/remove-all-entries">Remove all entries</a>
   <li><a href="/stats">Stats</a>
 </ul>
-</body>
-</html>
 """
 
 
@@ -58,19 +67,6 @@ OK
 
 
 ENTRIES_LIST_TEMPLATE = """
-<!doctype html>
-<html>
-<head>
-    <title>YouTube Feed Entries</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        h2 { margin-top: 30px; }
-        ul { list-style-type: none; padding-left: 0; }
-        li { margin-bottom: 10px; }
-        a { text-decoration: none; color: #1a0dab; }
-    </style>
-</head>
-<body>
 <h1>YouTube Feed Entries</h1>
 
 <ul>
@@ -144,86 +140,42 @@ ENTRIES_LIST_TEMPLATE = """
     </li>
 {% endfor %}
 </ul>
-</body>
-</html>
 """
 
 SOURCES_LIST_TEMPLATE = """
-<!doctype html>
-<html>
-<head>
-    <title>Sources</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        ul { list-style-type: none; padding-left: 0; }
-        li { margin-bottom: 12px; }
-        a { color: #1a0dab; text-decoration: none; }
-        .title { font-weight: bold; }
-    </style>
-</head>
-<body>
-    <h1>Sources {{sources_length}}</h1>
+<h1>Sources {{sources_length}}</h1>
 
-    <ul>
-        {% for source in sources %}
-            <li>
-                <img src="{{source.favicon}}" style="max-width:10%"/>
-                <div class="title">{{ source.title or "Untitled source" }}</div>
-                <a href="{{ source.url }}" target="_blank">
-                    {{ source.url }}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
-    {{pagination_text}}
-</body>
-</html>
+<ul>
+    {% for source in sources %}
+        <li>
+            <img src="{{source.favicon}}" style="max-width:10%"/>
+            <div class="title">{{ source.title or "Untitled source" }}</div>
+            <a href="{{ source.url }}" target="_blank">
+                {{ source.url }}
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+{{pagination_text}}
 """
 
 SET_SOURCES_TEMPLATE = """
-<!doctype html>
-<html>
-<head>
-    <title>Configure Sources</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        textarea { width: 100%; height: 200px; }
-        button { margin-top: 10px; padding: 10px 20px; }
-    </style>
-</head>
-<body>
-    <h1>Define Sources</h1>
+<h1>Define Sources</h1>
 
-    <form method="post">
-        <p>One source URL per line:</p>
-        <textarea name="sources">
-        </textarea>
-        <br>
-        <button type="submit">Save Sources</button>
-    </form>
-</body>
-</html>
+<form method="post">
+    <p>One source URL per line:</p>
+    <textarea name="sources">
+    </textarea>
+    <br>
+    <button type="submit">Save Sources</button>
+</form>
 """
 
 
 STATS_TEMPLATE = """
-<!doctype html>
-<html>
-<head>
-    <title>Stats</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        textarea { width: 100%; height: 200px; }
-        button { margin-top: 10px; padding: 10px 20px; }
-    </style>
-</head>
-<body>
 {% for stat_name, stat_counter in stats.items() %}
     <div>{{stat_name}} {{stat_counter}}</div>
 {% endfor %}
-
-</body>
-</html>
 """
 
 PROJECT_TEMPLATE = """

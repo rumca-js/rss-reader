@@ -1,4 +1,5 @@
 import time
+from datetime import datetime, timedelta
 from datetime import datetime
 from webtoolkit import BaseUrl
 
@@ -6,6 +7,8 @@ from webtoolkit import BaseUrl
 class TaskRunner(object):
     def __init__(self, connection):
         self.connection = connection
+        self.waiting_due = None
+        self.start_reading = True
 
     def truncate(self):
         self.connection.entries_table.truncate()
@@ -117,6 +120,8 @@ class TaskRunner(object):
             raise
 
     def add_sources(self, sources):
+        self.start_reading = True
+
         for source_url in sources:
             self.set_source(source_url)
 
@@ -134,6 +139,7 @@ class TaskRunner(object):
         print("Starting reading")
 
         while True:
+            self.start_reading = False
             source_count = self.connection.sources_table.count()
             sources = self.connection.sources_table.get_sources()
 
@@ -146,11 +152,9 @@ class TaskRunner(object):
                 print(f"{index}/{source_count} {source.url} {source.title}: Reading DONE")
                 time.sleep(1)
 
-            if source_count > 0:
-                SLEEP_TIME_6h = 27600
-                print(f"Sleeping for {SLEEP_TIME_6h}s")
-                time.sleep(SLEEP_TIME_6h)
-            else:
+            self.waiting_due = datetime.now() + timedelta(hours = 6)
+
+            if datetime.now() < self.waiting_due and not self.start_reading:
                 time.sleep(10)
 
     def print(self):
