@@ -15,6 +15,22 @@ function onSystemReady() {
 }
 
 
+function onSearchStart() {
+    $('#searchInput').prop('disabled', true);
+    $('#searchButton').prop('disabled', true);
+
+    let spinner_text = getSpinnerText("Searching");
+    $('#statusLine').html(spinner_text);
+}
+
+
+function onSearchStop() {
+    $('#searchInput').prop('disabled', false);
+    $('#searchButton').prop('disabled', false);
+    $('#statusLine').html("");
+}
+
+
 function workerFunction(e) {
     const { success, message_type, result, error } = e.data;
     if (success) {
@@ -49,7 +65,7 @@ function workerFunction(e) {
              let nav_text = getPaginationText();
 
              $('#pagination').html(nav_text);
-             $('#statusLine').html("");
+             onSearchStop();
         }
         else if (message_type == "socialdata") {
             debug(`Received social data len:${result.length}`);

@@ -72,6 +72,8 @@ function performSearchJSON() {
        fillListData();
 
        $('#pagination').html(getPaginationText());
+
+       onSearchStop();
     }
 }
 
@@ -84,9 +86,6 @@ function performSearchDb() {
     if (!system_initialized) {
         $('#statusLine').html("Cannot make query - database is not ready");
     }
-
-    let spinner_text = getSpinnerText("Searching");
-    $('#statusLine').html(spinner_text);
 
     let query = getQueryText();
     console.log("Sent entries message: " + query);
@@ -108,6 +107,7 @@ function performSearchAPI() {
        object_list_data = data;
        fillListData();
        $('#pagination').html(getPaginationSimpleText());
+       onSearchStop();
     }, page=page_num, search=userInput);
 }
 
@@ -123,6 +123,8 @@ function performSearch() {
     const currentUrl = new URL(window.location.href);
     currentUrl.searchParams.set('search', userInput);
     window.history.pushState({}, '', currentUrl);
+
+    onSearchStart();
 
     if (file_name) {
       if (isWorkerNeeded(file_name)) {
