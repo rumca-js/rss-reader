@@ -29,6 +29,8 @@ No writing, starring, tagging, or social features. Just read.
 
 Allows to integrate your project with YAFR.
 
+ - /search - search view
+ - /sources - sources list
  - /api/entries - returns JSON about entries
  - /api/sources - returns JSON about sources
- - /api/config - configuration
+ - stats - stats
