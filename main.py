@@ -167,7 +167,7 @@ def api_entries():
 
     for entry in entries:
         if entry.source_id:
-            sources = connection.sources_table.get_where({"id" : entry.source_id})
+            sources = connection.sources_table.get(id=entry.source_id)
 
             entry_source = None
             for source in sources:
