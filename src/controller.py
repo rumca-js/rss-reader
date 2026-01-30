@@ -51,7 +51,9 @@ class Controller(object):
     def add_sources_text(self, raw_text):
         # write raw_text to file
         output_path = Path("sources.txt")
-        output_path.write_text(raw_text, encoding="utf-8", errors='ignore')
+        with output_path.open("a", encoding="utf-8", errors="ignore") as f:
+            f.write("\n")
+            f.write(raw_text)
 
     def get_sources_to_add(self):
         output_path = Path("sources.txt")
