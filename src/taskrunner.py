@@ -1,3 +1,5 @@
+from pathlib import Path
+import json
 import time
 from datetime import datetime, timedelta
 from webtoolkit import BaseUrl
@@ -11,11 +13,34 @@ class TaskRunner(object):
         self.connection = None
         self.controller = None
         self.table_name = table_name
+        self.sources_data = None
 
         self.waiting_due = None
         self.start_reading = True
 
+        self.read_sources_data()
+
+    def read_sources_data(self):
+        path = Path("sources_data.json")
+        if path.exists():
+            raw_text = path.read_text()
+            try:
+                self.sources_data = json.loads(raw_text)
+            except Exception as E:
+                self.sources_data = {}
+        else:
+            self.sources_data = {}
+
+    def write_sources_data(self):
+        raw_text = json.dumps(self.sources_data)
+
+        path = Path("sources_data.json")
+        path.write_text(raw_text)
+
     def check_source(self, source):
+        self.sources_data[source.url] = {}
+        self.sources_data[source.url]["date_fetched"] = datetime.now().isoformat()
+
         url = self.get_source_url(source.url)
         response = url.get_response()
         if response.is_valid():
@@ -63,6 +88,8 @@ class TaskRunner(object):
     def process_sources(self):
         print("Starting reading")
 
+        self.add_due_sources()
+
         while True:
             self.start_reading = False
             source_count = self.controller.get_sources_count()
@@ -72,18 +99,31 @@ class TaskRunner(object):
                 if not source.enabled:
                     continue
 
+                this_source_data = self.sources_data.get(source.url)
+                if this_source_data:
+                    date_fetched = this_source_data.get("date_fetched")
+                    date_fetched = datetime.fromisoformat(date_fetched)
+                    if datetime.now() - date_fetched < timedelta(hours=1):
+                        continue
+
                 print(f"{index}/{source_count} {source.url} {source.title}: Reading")
                 self.check_source(source)
+                self.write_sources_data()
                 print(f"{index}/{source_count} {source.url} {source.title}: Reading DONE")
                 time.sleep(1)
 
             self.waiting_due = datetime.now() + timedelta(hours = 6)
 
             if datetime.now() < self.waiting_due and not self.start_reading:
-                sources = self.controller.get_sources_to_add()
-                if sources:
-                    self.start_reading = True
-                    self.add_sources(sources)
+                if self.add_due_sources():
                     continue
 
                 time.sleep(10)
+
+    def add_due_sources(self):
+        sources = self.controller.get_sources_to_add()
+        if sources:
+            self.start_reading = True
+            self.controller.add_sources(sources)
+            return True
+        return False
