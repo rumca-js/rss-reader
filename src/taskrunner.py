@@ -80,4 +80,10 @@ class TaskRunner(object):
             self.waiting_due = datetime.now() + timedelta(hours = 6)
 
             if datetime.now() < self.waiting_due and not self.start_reading:
+                sources = self.controller.get_sources_to_add()
+                if sources:
+                    self.start_reading = True
+                    self.add_sources(sources)
+                    continue
+
                 time.sleep(10)

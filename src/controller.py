@@ -1,4 +1,16 @@
+from pathlib import Path
 from datetime import datetime
+
+
+def read_sources_input(input_text):
+    sources = [
+        line.strip()
+        for line in input_text.splitlines()
+        if line.strip()
+    ]
+
+    return sources
+
 
 
 class Controller(object):
@@ -35,6 +47,20 @@ class Controller(object):
 
         for source_url in sources:
             self.set_source(source_url)
+
+    def add_sources_text(self, raw_text):
+        # write raw_text to file
+        output_path = Path("sources.txt")
+        output_path.write_text(raw_text, encoding="utf-8", errors='ignore')
+
+    def get_sources_to_add(self):
+        output_path = Path("sources.txt")
+        if output_path.exists():
+            raw_text = output_path.read_text(encoding="utf-8")
+            if raw_text:
+                sources = read_sources_input(raw_text)
+                output_path.unlink()
+                return sources
 
     def set_source(self, source_url, source_properties=None):
         link = source_url

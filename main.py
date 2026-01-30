@@ -132,16 +132,6 @@ def list_sources():
     return render_template_string(html_text, sources=sources, sources_length=sources_len)
 
 
-def read_sources_input(input_text):
-    sources = [
-        line.strip()
-        for line in input_text.splitlines()
-        if line.strip()
-    ]
-
-    return sources
-
-
 @app.route("/add-sources", methods=["GET", "POST"])
 def configure_sources():
     connection = DbConnection(table_name)
@@ -149,10 +139,8 @@ def configure_sources():
     if request.method == "POST":
         raw_text = request.form.get("sources", "")
 
-        sources = read_sources_input(raw_text)
-
         controller = Controller(connection)
-        controller.add_sources(sources)
+        controller.add_sources_text(raw_text)
 
     sources = []
     html_text = get_view(SET_SOURCES_TEMPLATE, title="Add sources")
