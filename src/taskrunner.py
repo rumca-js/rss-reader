@@ -56,9 +56,9 @@ class TaskRunner(object):
         if not favicon:
             favicon = ""
 
-        sources = self.connection.sources_table.get_where({"url":link})
-        if len(sources) > 0:
-            source = sources[0]
+        source_iter = self.connection.sources_table.get_where({"url":link})
+        source = next(source_iter, None)
+        if source:
             """
             TODO update source
             """

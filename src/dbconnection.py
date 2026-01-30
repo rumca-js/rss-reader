@@ -11,8 +11,7 @@ class DbConnection(object):
         self.db_file = db_file
 
         self.engine = create_engine(f"sqlite:///{self.db_file}")
-        #self.connection = self.engine.connect()
-        self.connection = None
+        self.connection = self.engine.connect()
 
         self.entries_table = ReflectedEntryTable(engine=self.engine, connection=self.connection)
         self.sources_table = ReflectedSourceTable(engine=self.engine, connection=self.connection)
