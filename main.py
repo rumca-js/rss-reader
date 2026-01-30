@@ -100,7 +100,7 @@ def entries():
 
 @app.route("/search")
 def search():
-    return render_template_string(PROJECT_TEMPLATE)
+    return render_template_string(PROJECT_TEMPLATE, title="Yafr search")
 
 
 @app.route("/sources")
