@@ -11,6 +11,7 @@ from templates.templates import *
 from src.taskrunner import TaskRunner
 from src.dbconnection import DbConnection
 from src.serializers import entry_to_json, source_to_json
+from src.controller import Controller
 
 
 page_size = 100
@@ -23,9 +24,8 @@ if not table_name.exists():
     shutil.copyfile(input_name, table_name)
 
 
+#engine = DbConnection.create_engine(table_name)
 app = Flask(__name__)
-connection = DbConnection(table_name)
-runner = TaskRunner(connection)
 
 
 class PagePagination:
@@ -44,7 +44,7 @@ class PagePagination:
         return page_size
 
 
-def get_entries_for_request(limit, offset):
+def get_entries_for_request(connection, limit, offset):
     order_by = [
       connection.entries_table.get_table().c.date_published.desc()
     ]
@@ -55,7 +55,7 @@ def get_entries_for_request(limit, offset):
     return entries
 
 
-def get_sources_for_request(limit, offset):
+def get_sources_for_request(connection, limit, offset):
     order_by = [
       connection.sources_table.get_table().c.title.desc()
     ]
@@ -85,11 +85,13 @@ def styles(filename):
 
 @app.route("/entries")
 def entries():
+    connection = DbConnection(table_name)
+
     pagination = PagePagination(request)
     limit = pagination.get_limit()
     offset = pagination.get_offset()
 
-    entries = get_entries_for_request(limit, offset)
+    entries = get_entries_for_request(connection, limit, offset)
 
     html_text = get_view(ENTRIES_LIST_TEMPLATE, title="Entries")
 
@@ -103,6 +105,8 @@ def search():
 
 @app.route("/sources")
 def list_sources():
+    connection = DbConnection(table_name)
+
     pagination = PagePagination(request)
     limit = pagination.get_limit()
     offset = pagination.get_offset()
@@ -119,7 +123,7 @@ def list_sources():
 
     sources_len = connection.sources_table.count()
 
-    sources = get_sources_for_request(limit, offset)
+    sources = get_sources_for_request(connection, limit, offset)
     template_text = SOURCES_LIST_TEMPLATE
     template_text = template_text.replace("{{pagination_text}}", pagination_text)
 
@@ -140,12 +144,15 @@ def read_sources_input(input_text):
 
 @app.route("/add-sources", methods=["GET", "POST"])
 def configure_sources():
+    connection = DbConnection(table_name)
+
     if request.method == "POST":
         raw_text = request.form.get("sources", "")
 
         sources = read_sources_input(raw_text)
 
-        runner.add_sources(sources)
+        controller = Controller(connection)
+        controller.add_sources(sources)
 
     sources = []
     html_text = get_view(SET_SOURCES_TEMPLATE, title="Add sources")
@@ -155,6 +162,8 @@ def configure_sources():
 
 @app.route("/api/entries")
 def api_entries():
+    connection = DbConnection(table_name)
+
     pagination = PagePagination(request)
     limit = pagination.get_limit()
     offset = pagination.get_offset()
@@ -163,16 +172,11 @@ def api_entries():
     # TODO implement search
 
     json_entries = []
-    entries = get_entries_for_request(limit, offset)
+    entries = get_entries_for_request(connection, limit, offset)
 
     for entry in entries:
         if entry.source_id:
-            sources = connection.sources_table.get(id=entry.source_id)
-
-            entry_source = None
-            for source in sources:
-                entry_source = source
-                break
+            entry_source = connection.sources_table.get(id=entry.source_id)
             json_entry_data = entry_to_json(entry, with_id=True, source=entry_source)
             json_entries.append(json_entry_data)
 
@@ -184,6 +188,8 @@ def api_entries():
 
 @app.route("/remove-all-entries")
 def remove_all_entries():
+    connection = DbConnection(table_name)
+
     connection.entries_table.truncate()
 
     html_text = get_view(OK_TEMPLATE, title="Remove all entries")
@@ -192,6 +198,8 @@ def remove_all_entries():
 
 @app.route("/remove-all-sources")
 def remove_all_sources():
+    connection = DbConnection(table_name)
+
     connection.sources_table.truncate()
     html_text = get_view(OK_TEMPLATE, title="Remove all sources")
     return render_template_string(html_text)
@@ -199,6 +207,8 @@ def remove_all_sources():
 
 @app.route("/remove-source")
 def remove_source():
+    connection = DbConnection(table_name)
+
     source_id = request.args.get("id")
 
     source = connection.sources_table.get(id=source_id)
@@ -211,6 +221,8 @@ def remove_source():
 
 @app.route("/remove-entry")
 def remove_entry():
+    connection = DbConnection(table_name)
+
     entry_id = request.args.get("id")
 
     entry = connection.entries_table.get(id=entry_id)
@@ -223,6 +235,8 @@ def remove_entry():
 
 @app.route("/stats")
 def stats():
+    connection = DbConnection(table_name)
+
     entries_len = connection.entries_table.count()
     sources_len = connection.sources_table.count()
 
@@ -236,12 +250,14 @@ def stats():
 
 @app.route("/api/sources")
 def api_sources():
+    connection = DbConnection(table_name)
+
     pagination = PagePagination(request)
     limit = pagination.get_limit()
     offset = pagination.get_offset()
 
     json_sources = []
-    sources = get_sources_for_request(limit, offset)
+    sources = get_sources_for_request(connection, limit, offset)
 
     for source in sources:
         json_data_source = source_to_json(source, with_id=True)
@@ -255,11 +271,7 @@ def api_sources():
 
 if __name__ == "__main__":
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-        entries_len = connection.entries_table.count()
-        sources_len = connection.sources_table.count()
-
-        print(f"Entries: {entries_len}")
-        print(f"Sources: {sources_len}")
+        runner = TaskRunner(table_name)
 
         thread = threading.Thread(
             target=runner.start,
