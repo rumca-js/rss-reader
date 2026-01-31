@@ -256,9 +256,9 @@ async function Initialize() {
 }
 
 
-function getEntriesJson(callback=null, page=1, search=null) {
+function getEntriesJson(callback=null, page=1, search=null, order_by=null) {
    let url_location = getEntryAPI();
-   let url_address = `${url_location}?p=${page}&search=${search}`;
+   let url_address = `${url_location}?p=${page}&search=${search}&order_by=${order_by}`;
    getDynamicJson(url_address, function(data) {
        if (callback) {
           callback(data);

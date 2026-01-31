@@ -64,10 +64,15 @@ class TaskRunner(object):
         """
         Called from a thread
         """
+        self.connection = DbConnection(self.table_name)
+        self.controller = Controller(connection=self.connection)
+
         self.setup_start()
 
         if init_sources:
             self.init_sources(init_sources)
+
+        self.controller.close()
 
         self.process_sources()
 
@@ -76,9 +81,6 @@ class TaskRunner(object):
             self.controller.set_source(source)
 
     def setup_start(self):
-        self.connection = DbConnection(self.table_name)
-        self.controller = Controller(connection=self.connection)
-
         entries_len = self.controller.get_entries_count()
         sources_len = self.controller.get_sources_count()
 
@@ -92,25 +94,16 @@ class TaskRunner(object):
 
         while True:
             self.start_reading = False
-            source_count = self.controller.get_sources_count()
-            sources = self.connection.sources_table.get_sources()
 
-            for index, source in enumerate(sources):
-                if not source.enabled:
-                    continue
+            source_ids = self.get_sources_ids()
 
-                this_source_data = self.sources_data.get(source.url)
-                if this_source_data:
-                    date_fetched = this_source_data.get("date_fetched")
-                    date_fetched = datetime.fromisoformat(date_fetched)
-                    if datetime.now() - date_fetched < timedelta(hours=1):
-                        continue
+            for index, source_id in enumerate(source_ids):
+                self.connection = DbConnection(self.table_name)
+                self.controller = Controller(connection=self.connection)
 
-                print(f"{index}/{source_count} {source.url} {source.title}: Reading")
-                self.check_source(source)
-                self.write_sources_data()
-                print(f"{index}/{source_count} {source.url} {source.title}: Reading DONE")
-                time.sleep(1)
+                self.process_source(index, source_id, len(source_ids))
+
+                self.controller.close()
 
             self.waiting_due = datetime.now() + timedelta(hours = 6)
 
@@ -119,6 +112,52 @@ class TaskRunner(object):
                     continue
 
                 time.sleep(10)
+
+    def get_sources_ids(self):
+        """
+        we assume that we have a small number of sources
+        """
+        self.connection = DbConnection(self.table_name)
+        self.controller = Controller(connection=self.connection)
+
+        source_count = self.controller.get_sources_count()
+
+        source_ids = []
+        for source in self.connection.sources_table.get_sources():
+            source_ids.append(source.id)
+
+        self.controller.close()
+
+        return source_ids
+
+    def process_source(self, index, source_id, source_count):
+        source = self.connection.sources_table.get(id=source_id)
+
+        if not source:
+            print("Could not find source")
+            return
+
+        if not source.enabled:
+            return
+
+        rules = self.connection.entry_rules.get_where({"trigger_rule_url" : source.url})
+        rules = next(rules, None)
+        if rules:
+            self.connection.source.delete(id=source.id)
+            return
+
+        this_source_data = self.sources_data.get(source.url)
+        if this_source_data:
+            date_fetched = this_source_data.get("date_fetched")
+            date_fetched = datetime.fromisoformat(date_fetched)
+            if datetime.now() - date_fetched < timedelta(hours=1):
+                return
+
+        print(f"{index}/{source_count} {source.url} {source.title}: Reading")
+        self.check_source(source)
+        self.write_sources_data()
+        print(f"{index}/{source_count} {source.url} {source.title}: Reading DONE")
+        time.sleep(1)
 
     def add_due_sources(self):
         sources = self.controller.get_sources_to_add()

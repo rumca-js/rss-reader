@@ -44,10 +44,12 @@ class PagePagination:
         return page_size
 
 
-def get_entries_for_request(connection, limit, offset):
+def get_entries_for_request(connection, limit, offset, search=None):
     order_by = [
       connection.entries_table.get_table().c.date_published.desc()
     ]
+
+    # TODO implement search
 
     entries = list(connection.entries_table.get_where(limit=limit,
                                                       offset=offset,
@@ -146,6 +148,22 @@ def configure_sources():
     html_text = get_view(SET_SOURCES_TEMPLATE, title="Add sources")
     return render_template_string(html_text, sources=sources)
 
+
+@app.route("/entry-rules", methods=["GET", "POST"])
+def entry_rules():
+    connection = DbConnection(table_name)
+
+    if request.method == "POST":
+        raw_text = request.form.get("sources", "")
+
+        controller = Controller(connection)
+        controller.add_entry_rules(raw_text)
+
+    sources = []
+    html_text = get_view(SET_SOURCES_TEMPLATE, title="Add Entry Rules")
+    return render_template_string(html_text, sources=sources)
+
+
 #### JSON
 
 @app.route("/api/entries")
@@ -157,10 +175,9 @@ def api_entries():
     offset = pagination.get_offset()
 
     search = request.args.get("search")
-    # TODO implement search
 
     json_entries = []
-    entries = get_entries_for_request(connection, limit, offset)
+    entries = get_entries_for_request(connection, limit, offset, search)
 
     for entry in entries:
         if entry.source_id:
@@ -227,10 +244,12 @@ def stats():
 
     entries_len = connection.entries_table.count()
     sources_len = connection.sources_table.count()
+    entry_rules_len = connection.entry_rules.count()
 
     stats_map = {}
     stats_map["Entries"] = entries_len
     stats_map["Sources"] = sources_len
+    stats_map["Entry rules"] = entry_rules_len
 
     html_text = get_view(STATS_TEMPLATE, title="Stats")
     return render_template_string(html_text, stats=stats_map)

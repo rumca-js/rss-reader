@@ -4,6 +4,7 @@ from linkarchivetools.utils.reflected import (
    ReflectedEntryTable,
    ReflectedSourceTable,
    ReflectedTable,
+   ReflectedEntryRules,
 )
 
 class DbConnection(object):
@@ -15,6 +16,7 @@ class DbConnection(object):
 
         self.entries_table = ReflectedEntryTable(engine=self.engine, connection=self.connection)
         self.sources_table = ReflectedSourceTable(engine=self.engine, connection=self.connection)
+        self.entry_rules = ReflectedEntryRules(engine=self.engine, connection=self.connection)
 
     def create_engine(db_file):
         engine = create_engine(f"sqlite:///{db_file}")
