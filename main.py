@@ -156,24 +156,31 @@ def configure_sources():
         controller = Controller(connection)
         controller.add_sources_text(raw_text)
 
-    sources = []
     html_text = get_view(SET_SOURCES_TEMPLATE, title="Add sources")
-    return render_template_string(html_text, sources=sources)
+
+    sources = []
+    for source in self.connection.sources_table.get_sources():
+        sources.append(source.url)
+
+    raw_data = "\n".join(sources)
+    return render_template_string(html_text, raw_data=raw_data)
 
 
 @app.route("/entry-rules", methods=["GET", "POST"])
 def entry_rules():
     connection = DbConnection(table_name)
+    controller = Controller(connection)
 
     if request.method == "POST":
         raw_text = request.form.get("sources", "")
-
-        controller = Controller(connection)
         controller.add_entry_rules(raw_text)
 
     sources = []
     html_text = get_view(SET_SOURCES_TEMPLATE, title="Add Entry Rules")
-    return render_template_string(html_text, sources=sources)
+
+    urls = controller.get_rule_urls()
+    raw_data = "\n".join(urls)
+    return render_template_string(html_text, raw_data=raw_data)
 
 
 #### JSON

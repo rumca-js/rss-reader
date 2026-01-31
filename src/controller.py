@@ -133,6 +133,15 @@ class Controller(object):
         for entry_rule_url in entry_rule_urls:
             self.add_entry_rule(entry_rule_url)
 
+    def get_rule_urls(self):
+        urls = []
+
+        rules = self.connection.entry_rules.get_where(limit=10000)
+        for rule in rules:
+            urls.append(rule.trigger_rule_url)
+
+        return urls
+
     def add_entry_rule(self, entry_rule):
         entries = self.connection.entry_rules.get_where({"trigger_rule_url" : entry_rule})
         entry = next(entries, None)

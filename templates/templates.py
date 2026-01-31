@@ -43,6 +43,7 @@ INDEX_TEMPLATE = """
   <li><a href="/entries">Entries</a>
   <li><a href="/remove-entry">Remove entry</a>
   <li><a href="/remove-all-entries">Remove all entries</a>
+  <li><a href="/entry-rules">Define entry rules</a>
   <li><a href="/stats">Stats</a>
 </ul>
 """
@@ -167,6 +168,7 @@ SET_SOURCES_TEMPLATE = """
 <form method="post">
     <p>One source URL per line:</p>
     <textarea name="sources">
+{{raw_data}}
     </textarea>
     <br>
     <button type="submit">Save Sources</button>
