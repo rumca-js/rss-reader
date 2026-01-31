@@ -108,7 +108,7 @@ class TaskRunner(object):
                 self.controller.close()
                 self.thread_date = datetime.now()
 
-            self.waiting_due = datetime.now() + timedelta(hours = 6)
+            self.waiting_due = datetime.now() + timedelta(hours = 1)
             self.thread_date = datetime.now()
 
             if datetime.now() < self.waiting_due and not self.start_reading:
