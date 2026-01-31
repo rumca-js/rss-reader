@@ -15,6 +15,8 @@ class TaskRunner(object):
         self.table_name = table_name
         self.sources_data = None
 
+        self.thread_date = datetime.now()
+
         self.waiting_due = None
         self.start_reading = True
 
@@ -104,8 +106,10 @@ class TaskRunner(object):
                 self.process_source(index, source_id, len(source_ids))
 
                 self.controller.close()
+                self.thread_date = datetime.now()
 
             self.waiting_due = datetime.now() + timedelta(hours = 6)
+            self.thread_date = datetime.now()
 
             if datetime.now() < self.waiting_due and not self.start_reading:
                 if self.add_due_sources():

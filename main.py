@@ -24,7 +24,7 @@ if not table_name.exists():
     shutil.copyfile(input_name, table_name)
 
 
-#engine = DbConnection.create_engine(table_name)
+runner = TaskRunner(table_name)
 app = Flask(__name__)
 
 
@@ -269,6 +269,7 @@ def stats():
     stats_map["Entries"] = entries_len
     stats_map["Sources"] = sources_len
     stats_map["Entry rules"] = entry_rules_len
+    stats_map["Thread date"] = runner.thread_date.isoformat()
 
     html_text = get_view(STATS_TEMPLATE, title="Stats")
     return render_template_string(html_text, stats=stats_map)
@@ -297,7 +298,6 @@ def api_sources():
 
 if __name__ == "__main__":
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-        runner = TaskRunner(table_name)
 
         thread = threading.Thread(
             target=runner.start,
