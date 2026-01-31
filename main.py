@@ -45,15 +45,27 @@ class PagePagination:
 
 
 def get_entries_for_request(connection, limit, offset, search=None):
+    table = connection.entries_table.get_table()
     order_by = [
-      connection.entries_table.get_table().c.date_published.desc()
+      table.c.date_published.desc()
     ]
 
-    # TODO implement search
-
-    entries = list(connection.entries_table.get_where(limit=limit,
-                                                      offset=offset,
-                                                      order_by=order_by))
+    if search and search != "":
+        conditions = [
+          table.c.title.ilike(f"%{search}%"),
+          table.c.description.ilike(f"%{search}%"),
+          table.c.link.ilike(f"%{search}%"),
+          table.c.source_url.ilike(f"%{search}%"),
+        ]
+        entries = list(connection.entries_table.get_where(limit=limit,
+                                                          offset=offset,
+                                                          order_by=order_by,
+                                                          conditions=conditions,
+                                                          ))
+    else:
+        entries = list(connection.entries_table.get_where(limit=limit,
+                                                          offset=offset,
+                                                          order_by=order_by))
     return entries
 
 
