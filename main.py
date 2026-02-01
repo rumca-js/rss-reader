@@ -183,33 +183,6 @@ def entry_rules():
     return render_template_string(html_text, raw_data=raw_data)
 
 
-#### JSON
-
-@app.route("/api/entries")
-def api_entries():
-    connection = DbConnection(table_name)
-
-    pagination = PagePagination(request)
-    limit = pagination.get_limit()
-    offset = pagination.get_offset()
-
-    search = request.args.get("search")
-
-    json_entries = []
-    entries = get_entries_for_request(connection, limit, offset, search)
-
-    for entry in entries:
-        if entry.source_id:
-            entry_source = connection.sources_table.get(id=entry.source_id)
-            json_entry_data = entry_to_json(entry, with_id=True, source=entry_source)
-            json_entries.append(json_entry_data)
-
-    json_data = {}
-    json_data["entries"] = json_entries
-
-    return jsonify(json_data)
-
-
 @app.route("/remove-all-entries")
 def remove_all_entries():
     connection = DbConnection(table_name)
@@ -265,14 +238,61 @@ def stats():
     sources_len = connection.sources_table.count()
     entry_rules_len = connection.entry_rules.count()
 
+    system = System.get_object()
+
     stats_map = {}
     stats_map["Entries"] = entries_len
     stats_map["Sources"] = sources_len
     stats_map["Entry rules"] = entry_rules_len
-    stats_map["Thread date"] = runner.thread_date.isoformat()
+    stats_map["System state"] = system.is_system_ok()
 
     html_text = get_view(STATS_TEMPLATE, title="Stats")
     return render_template_string(html_text, stats=stats_map)
+
+
+#### JSON
+
+@app.route("/api/entries")
+def api_entries():
+    connection = DbConnection(table_name)
+
+    pagination = PagePagination(request)
+    limit = pagination.get_limit()
+    offset = pagination.get_offset()
+
+    search = request.args.get("search")
+
+    json_entries = []
+    entries = get_entries_for_request(connection, limit, offset, search)
+
+    for entry in entries:
+        if entry.source_id:
+            entry_source = connection.sources_table.get(id=entry.source_id)
+            json_entry_data = entry_to_json(entry, with_id=True, source=entry_source)
+            json_entries.append(json_entry_data)
+
+    json_data = {}
+    json_data["entries"] = json_entries
+
+    return jsonify(json_data)
+
+
+@app.route("/api/stats")
+def api_stats():
+    connection = DbConnection(table_name)
+
+    entries_len = connection.entries_table.count()
+    sources_len = connection.sources_table.count()
+    entry_rules_len = connection.entry_rules.count()
+
+    system = System.get_object()
+
+    stats_map = {}
+    stats_map["entries_len"] = entries_len
+    stats_map["sources_len"] = sources_len
+    stats_map["system_state"] = system.is_system_ok()
+
+    return jsonify(stats_map)
 
 
 @app.route("/api/sources")

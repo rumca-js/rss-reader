@@ -1,11 +1,11 @@
-from pathlib import Path
-import json
 import time
 from datetime import datetime, timedelta
 from webtoolkit import BaseUrl
 
 from .dbconnection import DbConnection
 from .controller import Controller
+from .system import System
+from .sourcedata import SourceData
 
 
 class TaskRunner(object):
@@ -13,35 +13,16 @@ class TaskRunner(object):
         self.connection = None
         self.controller = None
         self.table_name = table_name
-        self.sources_data = None
+        self.sources_data = SourceData()
 
-        self.thread_date = datetime.now()
+        system = System.get_object()
+        system.set_thread_ok()
 
         self.waiting_due = None
         self.start_reading = True
 
-        self.read_sources_data()
-
-    def read_sources_data(self):
-        path = Path("sources_data.json")
-        if path.exists():
-            raw_text = path.read_text()
-            try:
-                self.sources_data = json.loads(raw_text)
-            except Exception as E:
-                self.sources_data = {}
-        else:
-            self.sources_data = {}
-
-    def write_sources_data(self):
-        raw_text = json.dumps(self.sources_data)
-
-        path = Path("sources_data.json")
-        path.write_text(raw_text)
-
     def check_source(self, source):
-        self.sources_data[source.url] = {}
-        self.sources_data[source.url]["date_fetched"] = datetime.now().isoformat()
+        self.sources_data.mark_read(source)
 
         url = self.get_source_url(source.url)
         response = url.get_response()
@@ -106,16 +87,26 @@ class TaskRunner(object):
                 self.process_source(index, source_id, len(source_ids))
 
                 self.controller.close()
-                self.thread_date = datetime.now()
+                system = System.get_object()
+                system.set_thread_ok()
 
-            self.waiting_due = datetime.now() + timedelta(hours = 1)
-            self.thread_date = datetime.now()
+            self.waiting_due = datetime.now() + self.get_due_time()
+            system.set_thread_ok()
+            self.wait_for_due_time()
 
-            if datetime.now() < self.waiting_due and not self.start_reading:
-                if self.add_due_sources():
-                    continue
+    def get_due_time(self):
+        return timedelta(hours = 1)
 
+    def wait_for_due_time(self):
+        while True:
+            if self.start_reading:
+                return True
+
+            if datetime.now() < self.waiting_due:
                 time.sleep(10)
+
+            if self.add_due_sources():
+                continue
 
     def get_sources_ids(self):
         """
@@ -150,16 +141,12 @@ class TaskRunner(object):
             self.connection.source.delete(id=source.id)
             return
 
-        this_source_data = self.sources_data.get(source.url)
-        if this_source_data:
-            date_fetched = this_source_data.get("date_fetched")
-            date_fetched = datetime.fromisoformat(date_fetched)
-            if datetime.now() - date_fetched < timedelta(hours=1):
-                return
+        if not self.sources_data.is_update_needed(source):
+            return
 
         print(f"{index}/{source_count} {source.url} {source.title}: Reading")
         self.check_source(source)
-        self.write_sources_data()
+        self.sources_data.write_sources_data()
         print(f"{index}/{source_count} {source.url} {source.title}: Reading DONE")
         time.sleep(1)
 
