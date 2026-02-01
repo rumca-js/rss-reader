@@ -1,6 +1,6 @@
 from pathlib import Path
 from datetime import datetime
-from .sourcesdata import SourcesData
+from .sourcedata import SourceData
 
 
 def read_line_things(input_text):
