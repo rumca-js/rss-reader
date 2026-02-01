@@ -9,6 +9,9 @@ def read_line_things(input_text):
         if line.strip()
     ]
 
+    sources = set(sources)
+    sources = list(sources)
+
     return sources
 
 
