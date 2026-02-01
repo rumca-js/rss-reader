@@ -45,7 +45,8 @@ class Controller(object):
         self.start_reading = True
 
         for source_url in sources:
-            self.set_source(source_url)
+            if not self.is_entry_rule_triggered(source_url):
+                self.set_source(source_url)
 
     def add_sources_text(self, raw_text):
         # write raw_text to file
@@ -125,6 +126,13 @@ class Controller(object):
         TODO Remove all entries with source_url = source
         """
         self.connection.entries_table.delete_where({"source_url" : source.url})
+
+    def is_entry_rule_triggered(self, url) -> bool:
+        rules = self.connection.entry_rules.get_where({"trigger_rule_url" : url})
+        rules = next(rules, None)
+        if rules:
+            return True
+        return False
 
     def add_entry_rules(self, raw_input):
         self.connection.entry_rules.truncate()

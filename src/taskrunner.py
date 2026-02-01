@@ -135,9 +135,7 @@ class TaskRunner(object):
         if not source.enabled:
             return
 
-        rules = self.connection.entry_rules.get_where({"trigger_rule_url" : source.url})
-        rules = next(rules, None)
-        if rules:
+        if self.controller.is_entry_rule_triggered(source.url):
             self.connection.sources_table.delete(id=source.id)
             return
 

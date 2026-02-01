@@ -116,10 +116,19 @@ def list_sources():
     next_page = page + 1
 
     pagination_text = "";
+    pagination_text += '<div id="pagination">'
+    pagination_text += '<nav>'
+    pagination_text += '<ul class="pagination">'
     if page > 2:
-        pagination_text += '<a href="?p=1">|&lt;</a>';
-    pagination_text += f'<a href="?p={prev_page}">&lt;</a>';
-    pagination_text += f'<a href="?p={next_page}">&gt;</a>';
+        pagination_text += '<a href="?p=1" class="btnNavigation page-link">|&lt;</a>';
+    if page > 1:
+        pagination_text += f'<a href="?p={prev_page}" class="btnNavigation page-link">&lt;</a>';
+    pagination_text += '<li class="page-item">'
+    pagination_text += f'<a href="?p={next_page}" class="btnNavigation page-link" >&gt;</a>';
+    pagination_text += '</li>'
+    pagination_text += '</ul>'
+    pagination_text += '</nav>'
+    pagination_text += '</div>'
 
     sources_len = connection.sources_table.count()
 

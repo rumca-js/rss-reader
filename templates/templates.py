@@ -1,7 +1,11 @@
 PAGINATION="""
 <div class="pagination">
-    <a href="{{ entries_page }}?p={{ prev_page }}">&lt;</a>
-    <a href="{{ entries_page }}?p={{ next_page }}">&gt;</a>
+    <li class="page-item">
+       <a href="{{ entries_page }}?p={{ prev_page }}" class="btnNavigation page-link">&lt;</a>
+    </li>
+    <li class="page-item">
+       <a href="{{ entries_page }}?p={{ next_page }}" class="btnNavigation page-link">&gt;</a>
+    </li>
 </div>
 """
 
@@ -12,41 +16,12 @@ def get_view(body, title=""):
 <head>
     <title>{title}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link  href="styles/viewerzip.css?i=90" rel="stylesheet" crossorigin="anonymous">
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; }
-        h2 { margin-top: 30px; }
-        ul { list-style-type: none; padding-left: 0; }
-        li { margin-bottom: 10px; }
-        a { text-decoration: none; color: #1a0dab; }
-        textarea { width: 100%; height: 200px; }
-        button { margin-top: 10px; padding: 10px 20px; }
-
-        .display-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 16px;
-            padding: 0;
-            margin: 20px 0;
-        }
-        .display-card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 12px;
-            background: #fff;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .display-thumb {
-            width: 100%;
-            height: 120px;
-            object-fit: contain;
-            background: #f5f5f5;
-            border-radius: 4px;
-        }
     </style>
+
 </head>
 <body>
    {body}
@@ -65,7 +40,6 @@ INDEX_TEMPLATE = """
   <li><a href="/add-sources">Add sources</a>
   <li><a href="/remove-source">Remove sources</a>
   <li><a href="/remove-all-sources">Remove all sources</a>
-  <li><a href="/entries">Entries</a>
   <li><a href="/remove-entry">Remove entry</a>
   <li><a href="/remove-all-entries">Remove all entries</a>
   <li><a href="/entry-rules">Define entry rules</a>
@@ -88,7 +62,10 @@ OK_TEMPLATE = """
     </style>
 </head>
 <body>
-   <button onclick="history.back()">Go back</button>
+    <div class="nav-buttons">
+        <button class="btn btn-primary" onclick="history.back()">Go back</button>
+        <a class="btn btn-primary" href="/">Home</a>
+    </div>
     OK
 </body>
 </html>
@@ -96,7 +73,10 @@ OK_TEMPLATE = """
 
 
 ENTRIES_LIST_TEMPLATE = """
-<button onclick="history.back()">Go back</button>
+<div class="nav-buttons">
+    <button class="btn btn-primary" onclick="history.back()">Go back</button>
+    <a class="btn btn-primary" href="/">Home</a>
+</div>
 
 <h1>YouTube Feed Entries</h1>
 
@@ -174,7 +154,10 @@ ENTRIES_LIST_TEMPLATE = """
 """
 
 SOURCES_LIST_TEMPLATE = """
-<button onclick="history.back()">Go back</button>
+<div class="nav-buttons">
+    <button class="btn btn-primary" onclick="history.back()">Go back</button>
+    <a class="btn btn-primary" href="/">Home</a>
+</div>
 
 <h1>Sources {{sources_length}}</h1>
 
@@ -202,7 +185,10 @@ SOURCES_LIST_TEMPLATE = """
 """
 
 SET_SOURCES_TEMPLATE = """
-<button onclick="history.back()">Go back</button>
+<div class="nav-buttons">
+    <button class="btn btn-primary" onclick="history.back()">Go back</button>
+    <a class="btn btn-primary" href="/">Home</a>
+</div>
 
 <h1>Define Sources</h1>
 
@@ -218,7 +204,10 @@ SET_SOURCES_TEMPLATE = """
 
 
 STATS_TEMPLATE = """
-<button onclick="history.back()">Go back</button>
+<div class="nav-buttons">
+    <button class="btn btn-primary" onclick="history.back()">Go back</button>
+    <a class="btn btn-primary" href="/">Home</a>
+</div>
 
 {% for stat_name, stat_counter in stats.items() %}
     <div>{{stat_name}} {{stat_counter}}</div>
