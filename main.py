@@ -98,21 +98,6 @@ def styles(filename):
     return send_from_directory("styles/", filename)
 
 
-@app.route("/entries")
-def entries():
-    connection = DbConnection(table_name)
-
-    pagination = PagePagination(request)
-    limit = pagination.get_limit()
-    offset = pagination.get_offset()
-
-    entries = get_entries_for_request(connection, limit, offset)
-
-    html_text = get_view(ENTRIES_LIST_TEMPLATE, title="Entries")
-
-    return render_template_string(html_text, entries=entries)
-
-
 @app.route("/search")
 def search():
     return render_template_string(PROJECT_TEMPLATE, title="Yafr search")
