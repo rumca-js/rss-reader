@@ -21,6 +21,31 @@ def get_view(body, title=""):
         a { text-decoration: none; color: #1a0dab; }
         textarea { width: 100%; height: 200px; }
         button { margin-top: 10px; padding: 10px 20px; }
+
+        .display-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+            padding: 0;
+            margin: 20px 0;
+        }
+        .display-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            background: #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .display-thumb {
+            width: 100%;
+            height: 120px;
+            object-fit: contain;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
@@ -63,13 +88,16 @@ OK_TEMPLATE = """
     </style>
 </head>
 <body>
-OK
+   <button onclick="history.back()">Go back</button>
+    OK
 </body>
 </html>
 """
 
 
 ENTRIES_LIST_TEMPLATE = """
+<button onclick="history.back()">Go back</button>
+
 <h1>YouTube Feed Entries</h1>
 
 <ul>
@@ -146,23 +174,36 @@ ENTRIES_LIST_TEMPLATE = """
 """
 
 SOURCES_LIST_TEMPLATE = """
+<button onclick="history.back()">Go back</button>
+
 <h1>Sources {{sources_length}}</h1>
 
-<ul>
+<div class="display-grid">
     {% for source in sources %}
-        <li>
-            <img src="{{source.favicon}}" style="max-width:10%"/>
-            <div class="title">{{ source.title or "Untitled source" }}</div>
-            <a href="{{ source.url }}" target="_blank">
-                {{ source.url }}
-            </a>
-        </li>
+        <a href="{{ source.url }}">
+            <div class="display-card">
+                <img
+                    src="{{ source.favicon }}"
+                    alt="Source thumbnail"
+                    class="display-thumb"
+                    onerror="this.style.display='none'"
+                />
+
+                <div class="source-title">
+                    {{ source.title or "Untitled source" }}
+                </div>
+
+            </div>
+        </a>
     {% endfor %}
-</ul>
+</div>
+
 {{pagination_text}}
 """
 
 SET_SOURCES_TEMPLATE = """
+<button onclick="history.back()">Go back</button>
+
 <h1>Define Sources</h1>
 
 <form method="post">
@@ -177,6 +218,8 @@ SET_SOURCES_TEMPLATE = """
 
 
 STATS_TEMPLATE = """
+<button onclick="history.back()">Go back</button>
+
 {% for stat_name, stat_counter in stats.items() %}
     <div>{{stat_name}} {{stat_counter}}</div>
 {% endfor %}

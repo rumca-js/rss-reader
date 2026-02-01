@@ -12,6 +12,7 @@ from src.taskrunner import TaskRunner
 from src.dbconnection import DbConnection
 from src.serializers import entry_to_json, source_to_json
 from src.controller import Controller
+from src.system import System
 
 
 page_size = 100
