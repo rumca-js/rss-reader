@@ -127,6 +127,10 @@ class Controller(object):
         """
         self.connection.entries_table.delete_where({"source_url" : source.url})
 
+    def remove_source(self, source):
+        self.remove_source_entries(source)
+        self.connection.sources_table.delete(id=source.id)
+
     def is_entry_rule_triggered(self, url) -> bool:
         rules = self.connection.entry_rules.get_where({"trigger_rule_url" : url})
         rules = next(rules, None)

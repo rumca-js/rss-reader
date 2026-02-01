@@ -70,14 +70,26 @@ def get_entries_for_request(connection, limit, offset, search=None):
     return entries
 
 
-def get_sources_for_request(connection, limit, offset):
+def get_sources_for_request(connection, limit, offset, search=None):
+    table = connection.sources_table.get_table()
+
     order_by = [
       connection.sources_table.get_table().c.title.desc()
     ]
 
-    sources = list(connection.sources_table.get_where(limit=limit,
-                                                      offset=offset,
-                                                      order_by=order_by))
+    if search and search != "":
+        conditions = [
+          table.c.title.ilike(f"%{search}%"),
+          table.c.url.ilike(f"%{search}%"),
+        ]
+        sources = list(connection.sources_table.get_where(limit=limit,
+                                                          offset=offset,
+                                                          order_by=order_by,
+                                                          conditions=conditions))
+    else:
+        sources = list(connection.sources_table.get_where(limit=limit,
+                                                          offset=offset,
+                                                          order_by=order_by))
     print(f"len {sources}")
     return sources
 
@@ -107,6 +119,8 @@ def search():
 def list_sources():
     connection = DbConnection(table_name)
 
+    search = request.args.get("search")
+
     pagination = PagePagination(request)
     limit = pagination.get_limit()
     offset = pagination.get_offset()
@@ -132,7 +146,7 @@ def list_sources():
 
     sources_len = connection.sources_table.count()
 
-    sources = get_sources_for_request(connection, limit, offset)
+    sources = get_sources_for_request(connection, limit, offset, search)
     template_text = SOURCES_LIST_TEMPLATE
     template_text = template_text.replace("{{pagination_text}}", pagination_text)
 
@@ -151,14 +165,8 @@ def configure_sources():
         controller = Controller(connection)
         controller.add_sources_text(raw_text)
 
-    html_text = get_view(SET_SOURCES_TEMPLATE, title="Add sources")
-
-    sources = []
-    for source in self.connection.sources_table.get_sources():
-        sources.append(source.url)
-
-    raw_data = "\n".join(sources)
-    return render_template_string(html_text, raw_data=raw_data)
+    html_text = get_view(ADD_SOURCES_TEMPLATE, title="Add sources")
+    return render_template_string(html_text, raw_data="")
 
 
 @app.route("/entry-rules", methods=["GET", "POST"])
@@ -171,7 +179,7 @@ def entry_rules():
         controller.add_entry_rules(raw_text)
 
     sources = []
-    html_text = get_view(SET_SOURCES_TEMPLATE, title="Add Entry Rules")
+    html_text = get_view(DEFINE_ENTRY_RULES_TEMPLATE, title="Set Entry Rules")
 
     urls = controller.get_rule_urls()
     raw_data = "\n".join(urls)
@@ -205,10 +213,14 @@ def remove_source():
 
     source = connection.sources_table.get(id=source_id)
     if source:
-        connection.entries_table.delete_where({"source_id" : source.id})
+        controller = Controller(connection)
+        controller.remove_source(source)
 
-    html_text = get_view(OK_TEMPLATE, title="Remove source")
-    return render_template_string(html_text)
+        html_text = get_view(OK_TEMPLATE, title="Remove source")
+        return render_template_string(html_text)
+    else:
+        html_text = get_view(NOK_TEMPLATE, title="Remove source")
+        return render_template_string(html_text)
 
 
 @app.route("/remove-entry")

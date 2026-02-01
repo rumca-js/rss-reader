@@ -38,6 +38,7 @@ class SourceData(object):
         if this_source_data:
             date_fetched = this_source_data.get("date_fetched")
             date_fetched = datetime.fromisoformat(date_fetched)
+
             if datetime.now() - date_fetched < timedelta(hours=1):
                 return False
 

@@ -38,9 +38,7 @@ INDEX_TEMPLATE = """
   <li><a href="/search">Search</a>
   <li><a href="/sources">Sources</a>
   <li><a href="/add-sources">Add sources</a>
-  <li><a href="/remove-source">Remove sources</a>
   <li><a href="/remove-all-sources">Remove all sources</a>
-  <li><a href="/remove-entry">Remove entry</a>
   <li><a href="/remove-all-entries">Remove all entries</a>
   <li><a href="/entry-rules">Define entry rules</a>
   <li><a href="/stats">Stats</a>
@@ -67,6 +65,30 @@ OK_TEMPLATE = """
         <a class="btn btn-primary" href="/">Home</a>
     </div>
     OK
+</body>
+</html>
+"""
+
+
+NOK_TEMPLATE = """
+<!doctype html>
+<html>
+<head>
+    <title>YouTube Feed Entries</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h2 { margin-top: 30px; }
+        ul { list-style-type: none; padding-left: 0; }
+        li { margin-bottom: 10px; }
+        a { text-decoration: none; color: #1a0dab; }
+    </style>
+</head>
+<body>
+    <div class="nav-buttons">
+        <button class="btn btn-primary" onclick="history.back()">Go back</button>
+        <a class="btn btn-primary" href="/">Home</a>
+    </div>
+    NOK
 </body>
 </html>
 """
@@ -163,34 +185,35 @@ SOURCES_LIST_TEMPLATE = """
 
 <div class="display-grid">
     {% for source in sources %}
-        <a href="{{ source.url }}">
-            <div class="display-card">
+        <div class="display-card">
+            <a href="{{ source.url }}">
                 <img
                     src="{{ source.favicon }}"
                     alt="Source thumbnail"
                     class="display-thumb"
                     onerror="this.style.display='none'"
                 />
+            </a>
 
-                <div class="source-title">
-                    {{ source.title or "Untitled source" }}
-                </div>
-
+            <div class="source-title">
+               {{ source.title or "Untitled source" }}
+               <a href="/remove-source?id={{source.id}}">[X]</a>
             </div>
-        </a>
+
+        </div>
     {% endfor %}
 </div>
 
 {{pagination_text}}
 """
 
-SET_SOURCES_TEMPLATE = """
+ADD_SOURCES_TEMPLATE = """
 <div class="nav-buttons">
     <button class="btn btn-primary" onclick="history.back()">Go back</button>
     <a class="btn btn-primary" href="/">Home</a>
 </div>
 
-<h1>Define Sources</h1>
+<h1>Add Sources</h1>
 
 <form method="post">
     <p>One source URL per line:</p>
@@ -198,7 +221,26 @@ SET_SOURCES_TEMPLATE = """
 {{raw_data}}
     </textarea>
     <br>
-    <button type="submit">Save Sources</button>
+    <button type="submit">Add</button>
+</form>
+"""
+
+
+DEFINE_ENTRY_RULES_TEMPLATE = """
+<div class="nav-buttons">
+    <button class="btn btn-primary" onclick="history.back()">Go back</button>
+    <a class="btn btn-primary" href="/">Home</a>
+</div>
+
+<h1>Define entry rules</h1>
+
+<form method="post">
+    <p>One source URL per line:</p>
+    <textarea name="sources">
+{{raw_data}}
+    </textarea>
+    <br>
+    <button type="submit">Save</button>
 </form>
 """
 
