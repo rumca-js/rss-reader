@@ -142,7 +142,7 @@ def list_sources():
     template_text = SOURCES_LIST_TEMPLATE
     template_text = template_text.replace("{{pagination_text}}", pagination_text)
 
-    html_text = get_view(SOURCES_LIST_TEMPLATE, title="Sources")
+    html_text = get_view(template_text, title="Sources")
 
     return render_template_string(html_text, sources=sources, sources_length=sources_len)
 
