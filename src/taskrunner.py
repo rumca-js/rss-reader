@@ -76,6 +76,8 @@ class TaskRunner(object):
         self.add_due_sources()
 
         while True:
+            system = System.get_object()
+
             self.start_reading = False
 
             source_ids = self.get_sources_ids()
@@ -87,7 +89,6 @@ class TaskRunner(object):
                 self.process_source(index, source_id, len(source_ids))
 
                 self.controller.close()
-                system = System.get_object()
                 system.set_thread_ok()
 
             self.waiting_due = datetime.now() + self.get_due_time()
@@ -149,9 +150,16 @@ class TaskRunner(object):
         time.sleep(1)
 
     def add_due_sources(self):
+        self.connection = DbConnection(self.table_name)
+        self.controller = Controller(connection=self.connection)
+
+        status = False
+
         sources = self.controller.get_sources_to_add()
         if sources:
             self.start_reading = True
             self.controller.add_sources(sources)
-            return True
-        return False
+            status = True
+
+        self.controller.close()
+        return status

@@ -44,3 +44,7 @@ class SourceData(object):
 
         return True
 
+    def remove(self):
+        sources_data = Path("sources_data.json")
+        if sources_data.exists():
+            sources_data.unlink()

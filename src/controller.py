@@ -1,5 +1,6 @@
 from pathlib import Path
 from datetime import datetime
+from .sourcesdata import SourcesData
 
 
 def read_line_things(input_text):
@@ -133,6 +134,8 @@ class Controller(object):
     def remove_source(self, source):
         self.remove_source_entries(source)
         self.connection.sources_table.delete(id=source.id)
+        sources_data = SourcesData()
+        sources_data.remove()
 
     def is_entry_rule_triggered(self, url) -> bool:
         rules = self.connection.entry_rules.get_where({"trigger_rule_url" : url})
