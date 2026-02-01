@@ -138,7 +138,7 @@ class TaskRunner(object):
         rules = self.connection.entry_rules.get_where({"trigger_rule_url" : source.url})
         rules = next(rules, None)
         if rules:
-            self.connection.source.delete(id=source.id)
+            self.connection.sources_table.delete(id=source.id)
             return
 
         if not self.sources_data.is_update_needed(source):
