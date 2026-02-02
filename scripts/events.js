@@ -5,13 +5,18 @@ function onSystemReady() {
     $('#searchInput').prop('disabled', false);
     $('#searchInput').focus();
 
-   let entry_id = getQueryParam("entry_id");
-   if (entry_id) {
-      performSearch();
-   }
-   else {
-      $('#statusLine').html("System is ready! You can perform search now");
-   }
+    let search = getQueryParam("search");
+    let entry_id = getQueryParam("entry_id");
+
+    if (entry_id) {
+       performSearch();
+    }
+    else if (search) {
+       performSearch();
+    }
+    else {
+       $('#statusLine').html("System is ready! You can perform search now");
+    }
 }
 
 
