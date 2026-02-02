@@ -106,14 +106,18 @@ class TaskRunner(object):
 
     def wait_for_due_time(self):
         while True:
+            system.set_thread_ok()
+
+            self.add_due_sources():
+
             if self.start_reading:
                 return True
 
             if datetime.now() < self.waiting_due:
                 time.sleep(10)
-
-            if self.add_due_sources():
-                continue
+            else:
+                self.start_reading = True
+                return True
 
     def get_sources_ids(self):
         """
@@ -156,7 +160,6 @@ class TaskRunner(object):
         time.sleep(1)
 
     def add_due_sources(self):
-        print("Checking if sources should be added")
         self.connection = DbConnection(self.table_name)
         self.controller = Controller(connection=self.connection)
 
