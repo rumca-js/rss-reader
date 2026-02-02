@@ -19,6 +19,8 @@ No writing, starring, tagging, or social features. Just read.
 Try it!
  - https://hub.docker.com/r/rozbujnik/yafr
 
+You can use RSS links from https://rumca-js.github.io/feeds to initialize you RSS client!
+
 # Features
 
  - SQLite database - Portable, easy to back up. Can be shared or copied between machines or tasks
@@ -34,6 +36,9 @@ Allows to integrate your project with YAFR.
 
  - /search - search view
  - /sources - sources list
+ - /stats - stats
+
+ API
  - /api/entries - returns JSON about entries
  - /api/sources - returns JSON about sources
- - stats - stats
+
