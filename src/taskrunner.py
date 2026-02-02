@@ -116,6 +116,7 @@ class TaskRunner(object):
         return timedelta(hours = 1)
 
     def wait_for_due_time(self):
+        system = System.get_object()
         while True:
             system.set_thread_ok()
 
