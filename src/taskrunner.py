@@ -25,6 +25,9 @@ class TaskRunner(object):
         self.sources_data.mark_read(source)
 
         url = self.get_source_url(source)
+        if not url:
+            return
+
         response = url.get_response()
         if response.is_valid():
             source_properties = url.get_properties()
