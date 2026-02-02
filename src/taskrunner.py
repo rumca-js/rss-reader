@@ -108,7 +108,7 @@ class TaskRunner(object):
         while True:
             system.set_thread_ok()
 
-            self.add_due_sources():
+            self.add_due_sources()
 
             if self.start_reading:
                 return True
