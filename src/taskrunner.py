@@ -24,7 +24,7 @@ class TaskRunner(object):
     def check_source(self, source):
         self.sources_data.mark_read(source)
 
-        url = self.get_source_url(source.url)
+        url = self.get_source_url(source)
         response = url.get_response()
         if response.is_valid():
             source_properties = url.get_properties()
@@ -37,8 +37,12 @@ class TaskRunner(object):
                 self.controller.add_entry(source, entry)
 
     def get_source_url(self, source):
-        url = BaseUrl(url=source)
-        return url
+        try:
+            url = BaseUrl(url=source.url)
+            return url
+        except:
+            print(f"Removing invalid source:{source.url}")
+            self.connection.sources_table.delete(id=source.id)
 
     def on_done(self, response):
         pass
@@ -71,10 +75,9 @@ class TaskRunner(object):
         print(f"Sources: {sources_len}")
 
     def process_sources(self):
-        print("Starting reading")
-
         self.add_due_sources()
 
+        print("Starting reading")
         while True:
             system = System.get_object()
 
@@ -150,6 +153,7 @@ class TaskRunner(object):
         time.sleep(1)
 
     def add_due_sources(self):
+        print("Checking if sources should be added")
         self.connection = DbConnection(self.table_name)
         self.controller = Controller(connection=self.connection)
 
