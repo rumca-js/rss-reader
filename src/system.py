@@ -1,3 +1,4 @@
+from pathlib import Path
 from datetime import datetime, timedelta
 
 
@@ -25,3 +26,10 @@ class System(object):
     def get_indicators(self):
         data = {}
         data["Reading thread"] = self.is_read_thread_ok()
+
+    def get_export_dir(self):
+        """
+        TODO url to file name
+        """
+        return Path("export")
+

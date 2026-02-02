@@ -1,0 +1,96 @@
+from pathlib import Path
+from .system import System
+
+
+class Sources(object):
+    def __init__(self, connection):
+        self.connection = connection
+
+    def set(self, source_url, source_properties=None):
+        link = source_url
+
+        title = ""
+        language = ""
+        favicon = ""
+
+        if source_properties:
+            title = source_properties.get("title", "")
+            language = source_properties.get("language", "")
+            favicon = source_properties.get("thumbnail", "")
+
+        if not title:
+            title = ""
+        if not language:
+            language = ""
+        if not favicon:
+            favicon = ""
+
+        source_iter = self.connection.sources_table.get_where({"url":link})
+        source = next(source_iter, None)
+        if source:
+            """
+            TODO update source
+            """
+            data = {}
+            data["title"] = title
+            data["favicon"] = favicon
+            data["language"] = favicon
+
+            self.connection.sources_table.update_json_data(source.id, data)
+            return
+
+        properties = {
+               "url": link,
+               "enabled" : True,
+               "source_type" : "",
+               "title" : title,
+               "category_name": "",
+               "subcategory_name": "",
+               "export_to_cms": False,
+               "remove_after_days": 5,
+               "language": language,
+               "age": 0,
+               "fetch_period": 3600,
+               "auto_tag": "",
+               "entries_backgroundcolor_alpha": 1.0,
+               "entries_backgroundcolor": "",
+               "entries_alpha": 1.0,
+               "proxy_location": "",
+               "auto_update_favicon":False,
+               "xpath": "",
+               "favicon": favicon,
+       }
+
+        self.connection.sources_table.insert_json(properties)
+
+    def count(self):
+        return self.connection.sources_table.count()
+
+    def delete_entries(self, source):
+        """
+        TODO Remove all entries with source_url = source
+        """
+        self.connection.entries_table.delete_where({"source_url" : source.url})
+
+    def delete(self, id):
+        self.delete_entries()
+        self.connection.sources_table.delete(id=id)
+        sources_data = SourcesData()
+        sources_data.remove()
+
+    def get(self,id):
+        return self.connection.sources_table.get(id=id)
+
+    def get_file_name(self, source):
+        """
+        TODO url to file name
+        """
+        system = System.get_object()
+
+        file_name = source.url
+        file_name = file_name.replace("\\", "_")
+        file_name = file_name.replace("/", "_")
+        file_name = file_name.replace(":", "_")
+        file_name = file_name + ".html"
+
+        return system.get_export_dir() / Path(file_name)

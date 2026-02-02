@@ -6,6 +6,9 @@ from .dbconnection import DbConnection
 from .controller import Controller
 from .system import System
 from .sourcedata import SourceData
+from .sources import Sources
+from .entries import Entries
+from .sourcewriter import SourceWriter
 
 
 class TaskRunner(object):
@@ -32,12 +35,14 @@ class TaskRunner(object):
         if response.is_valid():
             source_properties = url.get_properties()
 
-            self.controller.set_source(source.url, source_properties)
-            self.controller.remove_source_entries(source)
+            sources = Sources(self.connection)
+            sources.set(source.url, source_properties)
+            sources.delete_entries(source)
 
             entries = url.get_entries()
             for entry in entries:
-                self.controller.add_entry(source, entry)
+                entries = Entries(self.connection)
+                entries.add(entry, source)
 
     def get_source_url(self, source):
         try:
@@ -45,7 +50,8 @@ class TaskRunner(object):
             return url
         except:
             print(f"Removing invalid source:{source.url}")
-            self.connection.sources_table.delete(id=source.id)
+            sources = Sources(self.connection)
+            sources.delete(id=source.id)
 
     def on_done(self, response):
         pass
@@ -63,16 +69,20 @@ class TaskRunner(object):
             self.init_sources(init_sources)
 
         self.controller.close()
+        self.connection.close()
 
         self.process_sources()
 
     def init_sources(self, init_sources):
-        for source in init_sources:
-            self.controller.set_source(source)
+        for source_url in init_sources:
+            sources = Sources(self.connection)
+            sources.set(source_url)
 
     def setup_start(self):
-        entries_len = self.controller.get_entries_count()
-        sources_len = self.controller.get_sources_count()
+        entries = Entries(self.connection)
+        entries_len = entries.count()
+        sources = Sources(self.connection)
+        sources_len = sources.count()
 
         print(f"Entries: {entries_len}")
         print(f"Sources: {sources_len}")
@@ -95,6 +105,7 @@ class TaskRunner(object):
                 self.process_source(index, source_id, len(source_ids))
 
                 self.controller.close()
+                self.connection.close()
                 system.set_thread_ok()
 
             self.waiting_due = datetime.now() + self.get_due_time()
@@ -126,18 +137,21 @@ class TaskRunner(object):
         self.connection = DbConnection(self.table_name)
         self.controller = Controller(connection=self.connection)
 
-        source_count = self.controller.get_sources_count()
+        sources = Sources(self.connection)
+        source_count = sources.count()
 
         source_ids = []
         for source in self.connection.sources_table.get_sources():
             source_ids.append(source.id)
 
         self.controller.close()
+        self.connection.close()
 
         return source_ids
 
     def process_source(self, index, source_id, source_count):
-        source = self.connection.sources_table.get(id=source_id)
+        sources = Sources(self.connection)
+        source = sources.get(id=source_id)
 
         if not source:
             print("Could not find source")
@@ -147,7 +161,8 @@ class TaskRunner(object):
             return
 
         if self.controller.is_entry_rule_triggered(source.url):
-            self.connection.sources_table.delete(id=source.id)
+            sources = Sources(self.connection)
+            sources.delete(id=source.id)
             return
 
         if not self.sources_data.is_update_needed(source):
@@ -156,6 +171,10 @@ class TaskRunner(object):
         print(f"{index}/{source_count} {source.url} {source.title}: Reading")
         self.check_source(source)
         self.sources_data.write_sources_data()
+
+        writer = SourceWriter(connection=self.connection, source=source)
+        writer.write()
+
         print(f"{index}/{source_count} {source.url} {source.title}: Reading DONE")
         time.sleep(1)
 
@@ -172,4 +191,5 @@ class TaskRunner(object):
             status = True
 
         self.controller.close()
+        self.connection.close()
         return status

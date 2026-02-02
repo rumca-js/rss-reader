@@ -323,9 +323,16 @@ def api_sources():
     return jsonify(json_data)
 
 
+def print_file(afile):
+    path = Path(afile)
+    text = path.read_text()
+    lines = text.split("\n")
+    lines=set(lines)
+    return lines
+
+
 if __name__ == "__main__":
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-
         thread = threading.Thread(
             target=runner.start,
             args=(),
