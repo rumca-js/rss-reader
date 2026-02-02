@@ -251,13 +251,15 @@ function getNavSearchForm() {
 
 function getNavHomeButton() {
     let home_location = getHomeLocation();
-    //return `<a id="homeButton" class="d-flex align-items-right px-3 mb-2" href="#">🏠</a>`;
     return `<a id="homeButton" class="d-flex align-items-right px-3 mb-2" href="${home_location}">🏠</a>`;
 }
 
 
 function getNavFiles() {
     let project_text = getProjectListTextNav();
+    if (project_text == null)
+        return "";
+
     return `
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -272,6 +274,9 @@ function getNavFiles() {
 
 function getProjectListTextNav() {
     let files = getFileList();
+    if (files.length == 0) {
+        return;
+    }
     
     let html = ``;
     

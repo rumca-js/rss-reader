@@ -87,7 +87,7 @@ function performSearchDb() {
         $('#statusLine').html("Cannot make query - database is not ready");
     }
 
-    let query = getQueryText();
+    let query = getQueryText(default_page_size);
     console.log("Sent entries message: " + query);
     worker.postMessage({ type:"entries", query:query });
 
