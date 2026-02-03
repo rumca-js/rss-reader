@@ -56,3 +56,44 @@ def source_to_json(source, with_id=False):
 
     json_data["id"] = source.id
     return json_data
+
+
+def entry_jsons_to_rss(entries, channel_info=""):
+    """
+    Channel info can be for example <title>Channel Title</title>
+    """
+
+    rss_template = """<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" 
+     xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+     xmlns:atom="http://www.w3.org/2005/Atom" 
+     version="2.0" 
+     xmlns:media="http://search.yahoo.com/mrss/">
+    <channel>
+        {channel_info}
+        {items}
+    </channel>
+</rss>"""
+
+    items = ""
+    for entry in entries:
+        entry_info = "<item>\n"
+
+        if entry.get("title"):
+            entry_info += f"<title><![CDATA[{entry['title']}]]></title>\n"
+        if entry.get("link"):
+            entry_info += f"<link><![CDATA[{entry['link']}]]></link>\n"
+        if entry.get("description"):
+            entry_info += (
+                f"<description><![CDATA[{entry['description']}]]></description>\n"
+            )
+        if entry.get("date_published"):
+            entry_info += f"<pubDate><![CDATA[{entry['date_published']}]]></pubDate>\n"
+        if entry.get("thumbnail"):
+            entry_info += f"<media:thumbnail url=\"{entry['thumbnail']}\"/>\n"
+
+        entry_info += "</item>\n"
+
+        items += entry_info
+
+    return rss_template.format(channel_info=channel_info, items=items)
