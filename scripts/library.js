@@ -71,7 +71,7 @@ function GetPaginationNavSimple(currentPage) {
         `;
     }
 
-    if (currentPage > 2) {
+    if (currentPage > 1) {
         paginationText += `
             <li class="page-item">
                 <a href="?page=${currentPage - 1}&${paginationArgs}" data-page="${currentPage - 1}" class="btnNavigation page-link">&lt;</a>

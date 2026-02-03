@@ -106,7 +106,7 @@ function performSearchAPI() {
     getEntriesJson(function(data) {
        object_list_data = data;
        fillListData();
-       $('#pagination').html(getPaginationSimpleText());
+       $('#pagination').html(GetPaginationNavSimple(page_num));
        onSearchStop();
     }, page=page_num, search=userInput);
 }
@@ -251,12 +251,13 @@ async function Initialize() {
          onSystemReady();
       }
     }
+    else {
+       onSystemReady();
+    }
 }
 
 
 function onSystemReady() {
-    /* shared between JSON and DB */
-
     system_initialized = true;
     $('#searchInput').prop('disabled', false);
     $('#searchInput').focus();

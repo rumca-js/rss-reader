@@ -73,10 +73,14 @@ class Sources(object):
         self.connection.entries_table.delete_where({"source_url" : source.url})
 
     def delete(self, id):
-        self.delete_entries()
+        source = self.get(id)
+
+        self.delete_entries(source)
         self.connection.sources_table.delete(id=id)
+
         sources_data = SourcesData()
         sources_data.remove()
+
         self.remove_static_files()
 
     def get(self,id):
