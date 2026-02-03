@@ -46,5 +46,7 @@ EXPOSE 5000
 
 RUN ["chmod", "+x", "/app/docker-entrypoint.sh"]
 
+ENV PYTHONUNBUFFERED=1
+
 # TODO how to kill server?
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
