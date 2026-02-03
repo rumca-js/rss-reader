@@ -58,10 +58,9 @@ def source_to_json(source, with_id=False):
     return json_data
 
 
-def entry_jsons_to_rss(entries, channel_info=""):
-    """
-    Channel info can be for example <title>Channel Title</title>
-    """
+def source_and_entries_to_rss(source_json, entries_jsons):
+    channel_rss_text = source_json_to_rss(source_json)
+    entry_rss_text = entry_jsons_to_rss(entries, channel_rss_text)
 
     rss_template = """<?xml version="1.0" encoding="UTF-8"?>
 <rss xmlns:dc="http://purl.org/dc/elements/1.1/" 
@@ -75,6 +74,30 @@ def entry_jsons_to_rss(entries, channel_info=""):
     </channel>
 </rss>"""
 
+    return rss_template.format(channel_info=channel_rss_text, items=entry_rss_text)
+
+
+
+def source_json_to_rss(source):
+    channel_info = ""
+    if source.get("title"):
+        channel_info += f"<title>{source['title']}</title>\n"
+    if source.get("url"):
+        channel_info += f"<link>{source['url']}</link>\n"
+    if source.get("favicon"):
+        channel_info += f"<image><url>{source['favicon']}</url></image>\n"
+    if properties.get("date_published"):
+        channel_info += f"<published>{source['date_published']}</published>\n"
+    if source.get("language"):
+        channel_info += f"<language>{source['language']}</language>\n"
+
+    return channel_info
+
+
+def entry_jsons_to_rss(entries, channel_info=""):
+    """
+    Channel info can be for example <title>Channel Title</title>
+    """
     items = ""
     for entry in entries:
         entry_info = "<item>\n"
@@ -96,4 +119,4 @@ def entry_jsons_to_rss(entries, channel_info=""):
 
         items += entry_info
 
-    return rss_template.format(channel_info=channel_info, items=items)
+    return items
