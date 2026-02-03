@@ -12,6 +12,10 @@ APP_NAME=yafr
 
 build:
 	# poetry lock -> to write lock file
+	rm -f data/table.db
+	rm -f data/table.db-shm
+	rm -f data/table.db-wal
+	rm -f sources_data.json
 	docker build -t $(USER_NAME)/$(APP_NAME) .
 
 build-clean:

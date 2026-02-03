@@ -1,6 +1,7 @@
 import time
 from datetime import datetime, timedelta
 from webtoolkit import BaseUrl
+import traceback
 
 from .dbconnection import DbConnection
 from .controller import Controller
@@ -60,18 +61,21 @@ class TaskRunner(object):
         """
         Called from a thread
         """
-        self.connection = DbConnection(self.table_name)
-        self.controller = Controller(connection=self.connection)
+        try:
+            self.connection = DbConnection(self.table_name)
+            self.controller = Controller(connection=self.connection)
 
-        self.setup_start()
+            self.setup_start()
 
-        if init_sources:
-            self.init_sources(init_sources)
+            if init_sources:
+                self.init_sources(init_sources)
 
-        self.controller.close()
-        self.connection.close()
+            self.controller.close()
+            self.connection.close()
 
-        self.process_sources()
+            self.process_sources()
+        except Exception as e:
+            traceback.print_exc()
 
     def init_sources(self, init_sources):
         for source_url in init_sources:
@@ -159,14 +163,17 @@ class TaskRunner(object):
             return
 
         if not source.enabled:
+            print("Not enabled")
             return
 
         if self.controller.is_entry_rule_triggered(source.url):
+            print("rule triggered")
             sources = Sources(self.connection)
             sources.delete(id=source.id)
             return
 
         if not self.sources_data.is_update_needed(source):
+            print("Update not needed")
             return
 
         print(f"{index}/{source_count} {source.url} {source.title}: Reading")
