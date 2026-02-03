@@ -77,6 +77,7 @@ class Sources(object):
         self.connection.sources_table.delete(id=id)
         sources_data = SourcesData()
         sources_data.remove()
+        self.remove_static_files()
 
     def get(self,id):
         return self.connection.sources_table.get(id=id)
@@ -94,3 +95,8 @@ class Sources(object):
         file_name = file_name + ".html"
 
         return system.get_export_dir() / Path(file_name)
+
+    def remove_static_files(self):
+        path = self.get_file_name()
+        if path.exists():
+            path.unlink()

@@ -16,9 +16,13 @@ class SourceWriter(object):
         if not path.exists():
             path.mkdir()
 
+        path = self.get_file_name()
+        path.write_text(html)
+
+    def get_file_name(self):
         sources = Sources(self.connection)
         path = Path(sources.get_file_name(self.source))
-        path.write_text(html)
+        return path
 
     def get_html(self):
         limit = 100
