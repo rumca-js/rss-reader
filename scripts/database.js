@@ -7,6 +7,8 @@
  |_____/ \___\_\______|_|\__\___| |_|___/  \__,_| \_/\_/ \___||___/\___/|_| |_| |_|\___|
 */
 
+let PAGE_SIZE = 100;
+
 
 function getEntriesSelectColumns() {
     columns = "";
@@ -195,9 +197,6 @@ function getOrderStmt() {
 }
 
 
-let PAGE_SIZE = 100;
-
-
 function getSelectEntry(entry_id) {
    let text = "SELECT " + getEntriesSelectColumns();
    text += getEntriesSelectFromStmt();
@@ -208,23 +207,24 @@ function getSelectEntry(entry_id) {
 }
 
 
-function getEntriesSelectDefault(userInput, page_size) {
+function getEntriesSelectDefault() {
    let text = "SELECT " + getEntriesSelectColumns();
    text += getEntriesSelectFromStmt();
 
    let page = getQueryParam("page") || 1;
-   const offset = (page - 1) * page_size;
+   const offset = (page - 1) * PAGE_SIZE;
 
    let order_by = getOrderStmt();
 
-   let page_size_query = page_size;
+   let page_size_query = PAGE_SIZE;
 
    text = text + ` ${order_by} LIMIT ${page_size_query} OFFSET ${offset}`;
    return text;
 }
 
 
-function getEntriesSelectDefaultUserInput(userInput, page_size) {
+function getEntriesSelectDefaultUserInput(userInput) {
+   console.log(userInput);
    let text = "SELECT " + getEntriesSelectColumns();
    text += getEntriesSelectFromStmt();
 
@@ -234,18 +234,18 @@ function getEntriesSelectDefaultUserInput(userInput, page_size) {
             OR UPPER(t.tag) LIKE UPPER('%${userInput}%')`;
 
    let page = getQueryParam("page") || 1;
-   const offset = (page - 1) * page_size;
+   const offset = (page - 1) * PAGE_SIZE;
 
    let order_by = getOrderStmt();
 
-   let page_size_query = page_size;
+   let page_size_query = PAGE_SIZE;
 
    text = text + ` ${order_by} LIMIT ${page_size_query} OFFSET ${offset}`;
    return text;
 }
 
 
-function getEntriesSelectCustomSQL(userInput, page_size) {
+function getEntriesSelectCustomSQL(userInput) {
 
    let text = "SELECT " + getEntriesSelectColumns();
    text += getEntriesSelectFromStmt();
@@ -253,10 +253,10 @@ function getEntriesSelectCustomSQL(userInput, page_size) {
    text += ` WHERE ${userInput}`;
 
    let page = getQueryParam("page") || 1;
-   const offset = (page - 1) * page_size;
+   const offset = (page - 1) * PAGE_SIZE;
 
    let order_by = getOrderStmt();
-   let page_size_query = page_size;
+   let page_size_query = PAGE_SIZE;
 
    text = text + ` ${order_by} LIMIT ${page_size_query} OFFSET ${offset}`;
    return text;
@@ -310,10 +310,10 @@ async function getQueryTotalRows(text) {
 }
 
 
-function getQueryText(page_size=PAGE_SIZE) {
+function getQueryText() {
    let userInput = $("#searchInput").val();
 
-   let text = getEntriesSelectDefault(userInput, page_size);
+   let text = getEntriesSelectDefault(userInput);
 
    let entry_id = getQueryParam("entry_id");
    if (entry_id)
@@ -323,10 +323,10 @@ function getQueryText(page_size=PAGE_SIZE) {
 
    if (userInput && userInput != "") {
        if (userInput.indexOf("LIKE") !== -1) {
-          text = getEntriesSelectCustomSQL(userInput, page_size);
+          text = getEntriesSelectCustomSQL(userInput);
        }
        else {
-          text = getEntriesSelectDefaultUserInput(userInput, page_size);
+          text = getEntriesSelectDefaultUserInput(userInput);
        }
    }
 
