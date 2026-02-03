@@ -173,8 +173,8 @@ class TaskRunner(object):
         self.check_source(source)
         self.sources_data.write_sources_data()
 
-        writer = SourceWriter(connection=self.connection, source=source)
-        writer.write()
+        #writer = SourceWriter(connection=self.connection, source=source)
+        #writer.write()
 
         print(f"{index}/{source_count} {source.url} {source.title}: Reading DONE")
         time.sleep(1)

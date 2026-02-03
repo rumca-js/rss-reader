@@ -1,4 +1,7 @@
 from sqlalchemy import create_engine
+from sqlalchemy import (
+    text,
+)
 
 from linkarchivetools.utils.reflected import (
    ReflectedEntryTable,
@@ -7,19 +10,25 @@ from linkarchivetools.utils.reflected import (
    ReflectedEntryRules,
 )
 
+
 class DbConnection(object):
     def __init__(self, db_file):
         self.db_file = db_file
 
         self.engine = DbConnection.create_engine(self.db_file)
+
         self.connection = self.engine.connect()
+
+        sql_text = f"PRAGMA journal_mode=WAL;"
+        self.connection.execute(text(sql_text))
+        self.connection.commit()
 
         self.entries_table = ReflectedEntryTable(engine=self.engine, connection=self.connection)
         self.sources_table = ReflectedSourceTable(engine=self.engine, connection=self.connection)
         self.entry_rules = ReflectedEntryRules(engine=self.engine, connection=self.connection)
 
     def create_engine(db_file):
-        engine = create_engine(f"sqlite:///{db_file}")
+        engine = create_engine(f"sqlite:///{db_file}", connect_args={"check_same_thread": False})
         return engine
 
     def truncate(self):
