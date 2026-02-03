@@ -200,7 +200,7 @@ async function InitializeForJSON() {
    let spinner_text_3 = getSpinnerText("Unpacking zip");
    console.log("Unpacking zip");
    $("#statusLine").html(spinner_text_3);
-   await unPackFileJSONS(zip);
+   await unPackFileJSONS(zip, updateListData);
    $("#statusLine").html("");
 
    console.log("Sorting links");
@@ -208,7 +208,6 @@ async function InitializeForJSON() {
    all_entries = { ...object_list_data };
 
    console.log("On system ready");
-   onSystemReady();
 
    let entry_id = getQueryParam("entry_id");
    if (!entry_id) {
@@ -242,16 +241,37 @@ async function Initialize() {
 
     $('#searchInput').prop('disabled', true);
 
-    console.log("On system ready");
-    onSystemReady();
-
     if (getDefaultFileName()) {
       if (isWorkerNeeded(file_name)) {
-         return await InitializeForDb();
+         await InitializeForDb();
+         // onSystemReady is called when message about db being ready is received
       }
       else {
-         return await InitializeForJSON();
+         await InitializeForJSON();
+         onSystemReady();
       }
+    }
+}
+
+
+function onSystemReady() {
+    /* shared between JSON and DB */
+
+    system_initialized = true;
+    $('#searchInput').prop('disabled', false);
+    $('#searchInput').focus();
+
+    let search = getQueryParam("search");
+    let entry_id = getQueryParam("entry_id");
+
+    if (entry_id) {
+       performSearch();
+    }
+    else if (search) {
+       performSearch();
+    }
+    else {
+       $('#statusLine').html("System is ready! You can perform search now");
     }
 }
 
@@ -293,3 +313,24 @@ function readConfig() {
         default_page_size = parseInt(urlParams.get('default_page_size'), 10);
     }
 }
+
+
+function updateListData(jsonData) {
+    if (!object_list_data) {
+        object_list_data = { entries: [] };
+    }
+
+    if (!object_list_data.entries) {
+        object_list_data.entries = [];
+    }
+
+    if (jsonData && Array.isArray(jsonData.entries)) {
+        object_list_data.entries.push(...jsonData.entries);
+    } else if (jsonData && Array.isArray(jsonData)) {
+        object_list_data.entries.push(...jsonData);
+    } else {
+        console.error("Invalid JSON data: jsonData.entries is either not defined or not an array.");
+    }
+}
+
+

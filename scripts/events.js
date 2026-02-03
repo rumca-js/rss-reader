@@ -1,25 +1,3 @@
-function onSystemReady() {
-    /* shared between JSON and DB */
-
-    system_initialized = true;
-    $('#searchInput').prop('disabled', false);
-    $('#searchInput').focus();
-
-    let search = getQueryParam("search");
-    let entry_id = getQueryParam("entry_id");
-
-    if (entry_id) {
-       performSearch();
-    }
-    else if (search) {
-       performSearch();
-    }
-    else {
-       $('#statusLine').html("System is ready! You can perform search now");
-    }
-}
-
-
 function onSearchStart() {
     $('#searchInput').prop('disabled', true);
     $('#searchButton').prop('disabled', true);
