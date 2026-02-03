@@ -25,6 +25,21 @@ function getDefaultFileName() {
 }
 
 
+function getEntryAPI() {
+   return;
+}
+
+
+function getEntryLocalLink(entry) {
+    return `?entry_id=${entry.id}`;
+}
+
+
+function getHomeLocation() {
+    return "#";
+}
+
+
 function getFileList() {
     return [
     ];
@@ -36,19 +51,14 @@ function getDefaultFileLocation() {
 }
 
 
-function getHomeLocation() {
-    return "#";
-}
-
-
 function getFileVersion() {
     /* Forces refresh of the file */
-    return "71";
+    return "72";
 }
 
 
 function getSystemVersion() {
-    return "1.0.4";
+    return "1.0.6";
 }
 
 

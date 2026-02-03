@@ -123,22 +123,21 @@ function GetPaginationNav(currentPage, totalPages, totalRows) {
 
 
 function GetPaginationNavSimple(currentPage) {
-    let paginationText = `
-        <nav aria-label="Page navigation">
-            <ul class="pagination">
-    `;
 
     const currentUrl = new URL(window.location);
     currentUrl.searchParams.delete('page');
     const paginationArgs = `${currentUrl.searchParams.toString()}`;
 
-    if (currentPage > 1) {
+    let paginationText = ``;
+
+    if (currentPage > 2) {
         paginationText += `
             <li class="page-item">
                 <a href="?page=1&${paginationArgs}" data-page="1" class="btnNavigation page-link">|&lt;</a>
             </li>
         `;
     }
+
     if (currentPage > 1) {
         paginationText += `
             <li class="page-item">
@@ -153,13 +152,15 @@ function GetPaginationNavSimple(currentPage) {
         </li>
     `;
 
-    paginationText += `
+    let nav_html = `
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+               ${paginationText}
             </ul>
-            Page: ${currentPage}
         </nav>
     `;
 
-    return paginationText;
+    return nav_html;
 }
 
 

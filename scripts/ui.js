@@ -78,49 +78,6 @@ function getPaginationText() {
 }
 
 
-function getPaginationSimpleText() {
-    let page_num = parseInt(getQueryParam("page")) || 1;
-
-    let prev_page = page_num - 1;
-    let next_page = page_num + 1;
-
-    const currentUrl = new URL(window.location);
-    currentUrl.searchParams.delete('page');
-    const paginationArgs = `${currentUrl.searchParams.toString()}`;
-
-    let paginationText = `
-        <nav aria-label="Page navigation">
-            <ul class="pagination">
-    `;
-
-     if (page_num > 2) {
-        paginationText += `
-           <li class="page-item">
-             <a href="?page=1&${paginationArgs}" data-page="1" class="btnNavigation page-link">|&lt;</a>
-           </li>
-        `;
-     }
-
-     paginationText += `
-        <li class="page-item">
-          <a href="?page=${prev_page}&${paginationArgs}" data-page="${prev_page}" class="btnNavigation page-link">&lt;</a>
-        </li>
-     `;
-     paginationText += `
-        <li class="page-item">
-          <a href="?page=${next_page}&${paginationArgs}" data-page="${next_page}" class="btnNavigation page-link">&gt;</a>
-        </li>
-     `;
-
-    paginationText += `
-            </ul>
-        </nav>
-    `;
-
-     return paginationText;
-}
-
-
 function getProjectListText() {
     let files = getFileList();
     

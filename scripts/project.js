@@ -71,7 +71,7 @@ function performSearchJSON() {
 
        fillListData();
 
-       $('#pagination').html(getPaginationText());
+       $('#pagination').html(GetPaginationNavSimple());
 
        onSearchStop();
     }

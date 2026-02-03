@@ -4,7 +4,7 @@ let file_name = null;
 
 function getFileVersion() {
     /* Forces refresh of the file */
-    return "71";
+    return "72";
 }
 
 
