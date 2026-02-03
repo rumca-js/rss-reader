@@ -2,6 +2,7 @@
 Simple RSS reader
 """
 import os
+import sys
 import threading
 import shutil
 from pathlib import Path
@@ -332,7 +333,13 @@ def print_file(afile):
 
 
 if __name__ == "__main__":
-    if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    debug_mode = False
+
+    if len(sys.argv) > 1:
+        arg = sys.argv[1].lower()
+        debug_mode = arg in ["true", "1", "yes", "on"]
+
+    if (debug_mode and os.environ.get("WERKZEUG_RUN_MAIN") == "true") or not debug_mode:
         thread = threading.Thread(
             target=runner.start,
             args=(),
@@ -341,4 +348,4 @@ if __name__ == "__main__":
 
         thread.start()
 
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)
