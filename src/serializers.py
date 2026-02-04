@@ -60,7 +60,7 @@ def source_to_json(source, with_id=False):
 
 def source_and_entries_to_rss(source_json, entries_jsons):
     channel_rss_text = source_json_to_rss(source_json)
-    entry_rss_text = entry_jsons_to_rss(entries, channel_rss_text)
+    entry_rss_text = entry_jsons_to_rss(entries_jsons, channel_rss_text)
 
     rss_template = """<?xml version="1.0" encoding="UTF-8"?>
 <rss xmlns:dc="http://purl.org/dc/elements/1.1/" 
@@ -77,7 +77,6 @@ def source_and_entries_to_rss(source_json, entries_jsons):
     return rss_template.format(channel_info=channel_rss_text, items=entry_rss_text)
 
 
-
 def source_json_to_rss(source):
     channel_info = ""
     if source.get("title"):
@@ -86,7 +85,7 @@ def source_json_to_rss(source):
         channel_info += f"<link>{source['url']}</link>\n"
     if source.get("favicon"):
         channel_info += f"<image><url>{source['favicon']}</url></image>\n"
-    if properties.get("date_published"):
+    if source.get("date_published"):
         channel_info += f"<published>{source['date_published']}</published>\n"
     if source.get("language"):
         channel_info += f"<language>{source['language']}</language>\n"

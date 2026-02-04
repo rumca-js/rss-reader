@@ -1,5 +1,6 @@
 from pathlib import Path
 from .system import System
+from .sourcedata import SourceData
 
 
 class Sources(object):
@@ -78,10 +79,10 @@ class Sources(object):
         self.delete_entries(source)
         self.connection.sources_table.delete(id=id)
 
-        sources_data = SourcesData()
+        sources_data = SourceData()
         sources_data.remove()
 
-        self.remove_static_files()
+        self.remove_static_files(source)
 
     def get(self,id):
         return self.connection.sources_table.get(id=id)
@@ -100,7 +101,7 @@ class Sources(object):
 
         return system.get_export_dir() / Path(file_name)
 
-    def remove_static_files(self):
-        path = self.get_file_name()
+    def remove_static_files(self, source):
+        path = self.get_file_name(source)
         if path.exists():
             path.unlink()

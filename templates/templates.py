@@ -183,6 +183,12 @@ SOURCES_LIST_TEMPLATE = """
 
 <h1>Sources {{sources_length}}</h1>
 
+<form method="GET">
+  <label for="search">Search</label></br>
+  <input type="search" id="search" name="search" value="{{search_value}}"/>
+  <button type="submit">Search</button>
+</form>
+
 <div class="display-grid">
     {% for source in sources %}
         <div class="display-card">
@@ -197,6 +203,9 @@ SOURCES_LIST_TEMPLATE = """
 
             <div class="source-title">
                {{ source.title or "Untitled source" }}
+            </div>
+            <div class="source-title">
+               <a href="/rss/{{source.id}}">RSS</a>
                <a href="/remove-source?id={{source.id}}">[X]</a>
             </div>
 
@@ -223,6 +232,14 @@ ADD_SOURCES_TEMPLATE = """
     <br>
     <button type="submit">Add</button>
 </form>
+
+<p>
+You can find RSS sources at:
+  <ul>
+   <li><a href="https://rumca-js.github.io/feeds">Rumca-js feeds</a></li>
+   <li><a href="https://github.com/plenaryapp/awesome-rss-feeds">Awesome RSS feeds</a></li>
+  </ul>
+</p>
 """
 
 
@@ -232,10 +249,10 @@ DEFINE_ENTRY_RULES_TEMPLATE = """
     <a class="btn btn-primary" href="/">Home</a>
 </div>
 
-<h1>Define entry rules</h1>
+<h1>Define block URLs</h1>
 
 <form method="post">
-    <p>One source URL per line:</p>
+    <p>The URLs/feeds below will be blocked. One source URL per line:</p>
     <textarea name="sources">
 {{raw_data}}
     </textarea>

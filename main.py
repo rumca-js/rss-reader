@@ -14,12 +14,13 @@ from flask import (
    send_from_directory,
    url_for,
    redirect,
+   Response,
 )
 
 from templates.templates import *
 from src.taskrunner import TaskRunner
 from src.dbconnection import DbConnection
-from src.serializers import entry_to_json, source_to_json
+from src.serializers import entry_to_json, source_to_json, source_and_entries_to_rss
 from src.controller import Controller
 from src.system import System
 
@@ -158,6 +159,10 @@ def list_sources():
     sources = get_sources_for_request(connection, limit, offset, search)
     template_text = SOURCES_LIST_TEMPLATE
     template_text = template_text.replace("{{pagination_text}}", pagination_text)
+    if search is None:
+        template_text = template_text.replace("{{search_value}}", "")
+    else:
+        template_text = template_text.replace("{{search_value}}", search)
 
     html_text = get_view(template_text, title="Sources")
 
@@ -165,7 +170,7 @@ def list_sources():
 
 
 @app.route("/add-sources", methods=["GET", "POST"])
-def configure_sources():
+def add_sources():
     connection = DbConnection(table_name)
 
     if request.method == "POST":
@@ -177,6 +182,24 @@ def configure_sources():
 
     html_text = get_view(ADD_SOURCES_TEMPLATE, title="Add sources")
     return render_template_string(html_text, raw_data="")
+
+
+@app.route("/rss/<int:source_id>", methods=["GET", "POST"])
+def rss(source_id):
+    connection = DbConnection(table_name)
+
+    source = connection.sources_table.get(id=source_id)
+    entries = connection.entries_table.get_where({"source_id":source_id})
+
+    entry_list = []
+    for entry in entries:
+        entry_json = entry_to_json(entry)
+        entry_list.append(entry_json)
+
+    source_json = source_to_json(source)
+
+    rss_text = source_and_entries_to_rss(source_json, entry_list)
+    return Response(rss_text, mimetype="application/rss+xml")
 
 
 @app.route("/entry-rules", methods=["GET", "POST"])
