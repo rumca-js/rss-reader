@@ -6,7 +6,15 @@ import sys
 import threading
 import shutil
 from pathlib import Path
-from flask import Flask, render_template_string, jsonify, request, send_from_directory
+from flask import (
+   Flask,
+   render_template_string,
+   jsonify,
+   request,
+   send_from_directory,
+   url_for,
+   redirect,
+)
 
 from templates.templates import *
 from src.taskrunner import TaskRunner
@@ -165,6 +173,7 @@ def configure_sources():
 
         controller = Controller(connection)
         controller.add_sources_text(raw_text)
+        return redirect(url_for("sources"))
 
     html_text = get_view(ADD_SOURCES_TEMPLATE, title="Add sources")
     return render_template_string(html_text, raw_data="")
@@ -178,6 +187,7 @@ def entry_rules():
     if request.method == "POST":
         raw_text = request.form.get("sources", "")
         controller.add_entry_rules(raw_text)
+        return redirect(url_for("index"))
 
     sources = []
     html_text = get_view(DEFINE_ENTRY_RULES_TEMPLATE, title="Set Entry Rules")
