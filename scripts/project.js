@@ -265,10 +265,7 @@ function onSystemReady() {
     let search = getQueryParam("search");
     let entry_id = getQueryParam("entry_id");
 
-    if (entry_id) {
-       performSearch();
-    }
-    else if (search) {
+    if (entry_id || perform_auto_search) {
        performSearch();
     }
     else {
