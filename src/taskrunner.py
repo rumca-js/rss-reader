@@ -1,6 +1,6 @@
 import time
 from datetime import datetime, timedelta
-from webtoolkit import BaseUrl
+from webtoolkit import BaseUrl, RemoteUrl
 import traceback
 
 from .dbconnection import DbConnection
@@ -46,13 +46,26 @@ class TaskRunner(object):
                 entries.add(entry, source)
 
     def get_source_url(self, source):
+        config = self.connection.configurationentry.get()
         try:
-            url = BaseUrl(url=source.url)
+            if False:
+                #if self.is_remote_server() or config.remote_webtools_server_location:
+                # TODO dates are strings
+                location = config.remote_webtools_server_location
+                if not location:
+                    location = RemoteUrl.get_remote_server_location()
+
+                url = RemoteUrl(url=source.url, remote_server_location=location)
+            else:
+                url = BaseUrl(url=source.url)
             return url
         except:
             print(f"Removing invalid source:{source.url}")
             sources = Sources(self.connection)
             sources.delete(id=source.id)
+    
+    def is_remote_server(self):
+        return RemoteUrl.get_remote_server_location()
 
     def on_done(self, response):
         pass

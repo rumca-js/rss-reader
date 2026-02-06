@@ -27,7 +27,7 @@ class Entries(object):
             self.connection.entries_table.insert_json(entry_json)
         except Exception as E:
             print(E)
-            print(entry)
+            print(entry_json)
             raise
 
     def count(self):

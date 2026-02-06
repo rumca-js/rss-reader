@@ -418,14 +418,14 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "linkarchivetools"
-version = "0.1.15"
+version = "0.1.18"
 description = "Link Archive Tools"
 optional = false
 python-versions = "<4.0,>=3.10"
 groups = ["main"]
 files = [
-    {file = "linkarchivetools-0.1.15-py3-none-any.whl", hash = "sha256:9f732c20161fe8e6662a8414ddc9b1442332cdf126e06c2b8002f62ee579fbac"},
-    {file = "linkarchivetools-0.1.15.tar.gz", hash = "sha256:83a874fef4f36fa4ed619efd8934ca6d9d34c48301570fbe54c9d7d34d94c2e5"},
+    {file = "linkarchivetools-0.1.18-py3-none-any.whl", hash = "sha256:289e26010004b5da4f801c1754cb0be5b0926d499b7b017e2a53b58a8dc7af56"},
+    {file = "linkarchivetools-0.1.18.tar.gz", hash = "sha256:4adb47d4e29ef252f3d0ac5488dd244e0e93a5e2010416bec1aa907e400cc68f"},
 ]
 
 [package.dependencies]
@@ -434,7 +434,7 @@ python-dateutil = ">=2.8.2,<3.0.0"
 requests = ">=2.32.5,<3.0.0"
 sqlalchemy = "*"
 sympy = ">=1.13.2,<2.0.0"
-webtoolkit = ">=0.0.191,<0.0.192"
+webtoolkit = ">=0.0.194,<0.0.195"
 
 [[package]]
 name = "lxml"
@@ -1254,14 +1254,14 @@ zstd = ["backports-zstd (>=1.0.0) ; python_version < \"3.14\""]
 
 [[package]]
 name = "webtoolkit"
-version = "0.0.191"
+version = "0.0.194"
 description = "Web tools and interfaces for Internet data processing."
 optional = false
 python-versions = "<4.0,>=3.9"
 groups = ["main"]
 files = [
-    {file = "webtoolkit-0.0.191-py3-none-any.whl", hash = "sha256:07b01a1a4b92c8b02131e7ceec44f6244da6a481bcff4eed5b05c6937fc1fda3"},
-    {file = "webtoolkit-0.0.191.tar.gz", hash = "sha256:7c999a7a77ad944832123bc782879ac3dfd031bf04f454e0f24bd311b878ae4a"},
+    {file = "webtoolkit-0.0.194-py3-none-any.whl", hash = "sha256:8c5d7643fb165ea839ec9cbf30cc76695122fc0ed93c8e2241eb515c7fc43047"},
+    {file = "webtoolkit-0.0.194.tar.gz", hash = "sha256:0963e818dcc7563e851a38a48c84e1023fa9a6d7646c073eb6d20a7799bb1352"},
 ]
 
 [package.dependencies]
@@ -1297,4 +1297,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "4efa84b5e9d1b45a60fadaf32815337d2abb92024a3de17178894a5852020f71"
+content-hash = "a92799cd375edb1ad749f1f704e983f7ca305a240302924930efd3fd913387e9"
