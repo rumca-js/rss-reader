@@ -271,11 +271,11 @@ function getEntryLinkText(entry) {
 
 
 function getEntrySourceTitle(entry) {
-    let source_title = "";
-    if (entry.source_title) {
-       source_title = escapeHtml(entry.source_title)
+    let source__title = "";
+    if (entry.source__title) {
+       source__title = escapeHtml(entry.source__title)
     }
-    return source_title;
+    return source__title;
 }
 
 
@@ -1225,7 +1225,7 @@ function getEntryVisitsBar(entry, show_icons=true, small_icons=true) {
     let title_safe = getEntryTitleSafe(entry);
     let link = entry.link;
     let thumbnail = entry.thumbnail;
-    let source_title = entry.source_title;
+    let source__title = entry.source__title;
     let date_published = getEntryDatePublished(entry);
     let date_last_visit = entry.date_last_visit.toLocaleString();
     let number_of_visits = entry.number_of_visits;
@@ -1284,7 +1284,7 @@ function getEntryRelatedBar(entry, from_entry_id) {
     let title_safe = getEntryTitleSafe(entry);
     let link = entry.link;
     let thumbnail = entry.thumbnail;
-    let source_title = entry.source_title;
+    let source__title = entry.source__title;
     let date_published = getEntryDatePublished(entry);
 
     let badge_text = getEntryVotesBadge(entry, true);
@@ -1337,7 +1337,7 @@ function getEntryReadLaterBar(entry, show_icons=true, small_icons=true) {
     let title_safe = entry.title_safe;
     let link = entry.link;
     let thumbnail = entry.thumbnail;
-    let source_title = entry.source_title;
+    let source__title = entry.source__title;
     let date_published = entry.date_published.toLocaleString();
 
     let badge_text = getEntryVotesBadge(entry, true);
@@ -1414,7 +1414,7 @@ function entryStandardTemplateContents(entry, show_icons = true, small_icons = f
     let author = getEntryAuthorText(entry);
     let social = getEntrySocialDataText(entry);
     let tags_text = getEntryTagStrings(entry);
-    let source_title = getEntrySourceTitle(entry);
+    let source__title = getEntrySourceTitle(entry);
 
     let img_text = '';
     if (show_icons) {
@@ -1449,7 +1449,7 @@ function entryStandardTemplateContents(entry, show_icons = true, small_icons = f
                       class="text-reset"
                        entryDetails="true"
                     >
-                        ${source_title} ${date_published} ${author}
+                        ${source__title} ${date_published} ${author}
                     </div>
                     <div class="text-reset mx-2">${tags_text} ${language_text}</div>
                     <div class="entry-social">${social}</div>
@@ -1527,7 +1527,7 @@ function entryGalleryTemplateDesktopContents(entry, show_icons = true, small_ico
     let social = getEntrySocialDataText(entry);
     let tags_text = getEntryTagStrings(entry);
     let title_safe = getEntryTitleSafe(entry);
-    let source_title = getEntrySourceTitle(entry);
+    let source__title = getEntrySourceTitle(entry);
 
     let thumbnail = "";
     if (show_icons)
@@ -1567,7 +1567,7 @@ function entryGalleryTemplateDesktopContents(entry, show_icons = true, small_ico
                       "
                       id="entryDetails">
                     <span style="font-weight: bold" class="text-primary" entryTitle="true">${title_safe}</span>
-                    <div class="link-list-item-description" entryDetails="true">${source_title}</div>
+                    <div class="link-list-item-description" entryDetails="true">${source__title}</div>
                     <div class="text-reset mx-2">${tags_text} ${language_text}</div>
                     <div class="entry-social">${social}</div>
                 </div>
@@ -1585,7 +1585,7 @@ function entryGalleryTemplateMobileContents(entry, show_icons = true, small_icon
     let badge_visited = getEntryVisitedBadge(entry);
 
     let title_safe = getEntryTitleSafe(entry);
-    let source_title = getEntrySourceTitle(entry);
+    let source__title = getEntrySourceTitle(entry);
     let tags_text = getEntryTagStrings(entry);
     let social = getEntrySocialDataText(entry);
 
@@ -1619,7 +1619,7 @@ function entryGalleryTemplateMobileContents(entry, show_icons = true, small_icon
 			   flex-grow:0;max-height:30%
                       ">
                     <span style="font-weight: bold" class="text-primary" entryTitle="true">${title_safe}</span>
-                    <div class="link-list-item-description" entryDetails="true">${source_title}</div>
+                    <div class="link-list-item-description" entryDetails="true">${source__title}</div>
                     <div class="text-reset mx-2">${tags_text} ${language_text}</div>
                     <div class="entry-social">${social}</div>
                 </div>

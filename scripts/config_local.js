@@ -21,6 +21,17 @@ let entries_visit_alpha=1.0;
 let entries_dead_alpha=0.5;
 
 
+function getFileVersion() {
+    /* Forces refresh of the file */
+    return "73";
+}
+
+
+function getSystemVersion() {
+    return "1.0.7";
+}
+
+
 function getDefaultFileName() {
     return "table.db";
 }
@@ -49,17 +60,6 @@ function getFileList() {
 
 function getDefaultFileLocation() {
     return "/data/";
-}
-
-
-function getFileVersion() {
-    /* Forces refresh of the file */
-    return "72";
-}
-
-
-function getSystemVersion() {
-    return "1.0.6";
 }
 
 

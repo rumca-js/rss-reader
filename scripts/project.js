@@ -71,7 +71,7 @@ function performSearchJSON() {
 
        fillListData();
 
-       $('#pagination').html(GetPaginationNavSimple());
+       $('#pagination').html(getPaginationText());
 
        onSearchStop();
     }
@@ -91,8 +91,9 @@ function performSearchDb() {
     console.log("Sent entries message: " + query);
     worker.postMessage({ type:"entries", query:query });
 
-    console.log("Sent pagination message: " + query);
-    worker.postMessage({ type:"pagination", query:query });
+    // if we want to have precise message
+    //console.log("Sent pagination message: " + query);
+    //worker.postMessage({ type:"pagination", query:query });
 }
 
 
@@ -106,7 +107,7 @@ function performSearchAPI() {
     getEntriesJson(function(data) {
        object_list_data = data;
        fillListData();
-       $('#pagination').html(GetPaginationNavSimple(page_num));
+       $('#pagination').html(getPaginationText());
        onSearchStop();
     }, page=page_num, search=userInput);
 }
@@ -243,15 +244,18 @@ async function Initialize() {
 
     if (getDefaultFileName()) {
       if (isWorkerNeeded(file_name)) {
+         initialization_mode = "database";
          await InitializeForDb();
          // onSystemReady is called when message about db being ready is received
       }
       else {
          await InitializeForJSON();
+         initialization_mode = "json";
          onSystemReady();
       }
     }
     else {
+       initialization_mode = "api";
        onSystemReady();
     }
 }
