@@ -106,6 +106,7 @@ def get_sources_for_request(connection, limit, offset, search=None):
 
 @app.route("/")
 def index():
+    connection = DbConnection(table_name)
     config = connection.configurationentry.get_first()
     html_text = get_view(INDEX_TEMPLATE, title=config.instance_title)
     return render_template_string(html_text)
