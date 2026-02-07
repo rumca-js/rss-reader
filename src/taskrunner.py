@@ -17,7 +17,6 @@ class TaskRunner(object):
         self.connection = None
         self.controller = None
         self.table_name = table_name
-        self.sources_data = SourceData()
 
         system = System.get_object()
         system.set_thread_ok()
@@ -26,7 +25,8 @@ class TaskRunner(object):
         self.start_reading = True
 
     def check_source(self, source):
-        self.sources_data.mark_read(source)
+        sourcedata = SourceData(self.connection)
+        sourcedata.mark_read(source)
 
         url = self.get_source_url(source)
         if not url:
@@ -86,6 +86,8 @@ class TaskRunner(object):
         try:
             self.connection = DbConnection(self.table_name)
             self.controller = Controller(connection=self.connection)
+
+            self.sources_data = SourceData(self.connection)
 
             self.setup_start()
 
@@ -194,13 +196,14 @@ class TaskRunner(object):
             sources.delete(id=source.id)
             return
 
-        if not self.sources_data.is_update_needed(source):
+        sources_data = SourceData(self.connection)
+
+        if not sources_data.is_update_needed(source):
             print("Update not needed")
             return
 
         print(f"{index}/{source_count} {source.url} {source.title}: Reading")
         self.check_source(source)
-        self.sources_data.write_sources_data()
 
         #writer = SourceWriter(connection=self.connection, source=source)
         #writer.write()
