@@ -402,13 +402,13 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "linkarchivetools"
-version = "0.1.21"
+version = "0.1.23"
 description = "Link Archive Tools"
 optional = false
 python-versions = "<4.0,>=3.10"
 files = [
-    {file = "linkarchivetools-0.1.21-py3-none-any.whl", hash = "sha256:d4d82b9089de5c17d444842f1b1fbe7853ebcf72a73e7d0d2f96b96ef0b3266c"},
-    {file = "linkarchivetools-0.1.21.tar.gz", hash = "sha256:561f95956821249f4ceadb97e405d26e93717a2957b3ceafd4b9d05f77d988b7"},
+    {file = "linkarchivetools-0.1.23-py3-none-any.whl", hash = "sha256:c61bcc4da9710fe64dec450e7ab4ff233dbd950460a71ac99ece1992277cb6ca"},
+    {file = "linkarchivetools-0.1.23.tar.gz", hash = "sha256:33c3c89d31098b5d584d1cb9ff1676d1e0209b2b2c3da89cabe50eab3b619b38"},
 ]
 
 [package.dependencies]
@@ -417,7 +417,7 @@ python-dateutil = ">=2.8.2,<3.0.0"
 requests = ">=2.32.5,<3.0.0"
 sqlalchemy = "*"
 sympy = ">=1.13.2,<2.0.0"
-webtoolkit = ">=0.0.194,<0.0.195"
+webtoolkit = ">=0.0.197,<0.0.198"
 
 [[package]]
 name = "lxml"
@@ -1214,13 +1214,13 @@ zstd = ["backports-zstd (>=1.0.0)"]
 
 [[package]]
 name = "webtoolkit"
-version = "0.0.194"
+version = "0.0.197"
 description = "Web tools and interfaces for Internet data processing."
 optional = false
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "webtoolkit-0.0.194-py3-none-any.whl", hash = "sha256:8c5d7643fb165ea839ec9cbf30cc76695122fc0ed93c8e2241eb515c7fc43047"},
-    {file = "webtoolkit-0.0.194.tar.gz", hash = "sha256:0963e818dcc7563e851a38a48c84e1023fa9a6d7646c073eb6d20a7799bb1352"},
+    {file = "webtoolkit-0.0.197-py3-none-any.whl", hash = "sha256:4371dd055ef4bdca653d449b3982e4e7b3c179d7b513722d7762d2617eff3f86"},
+    {file = "webtoolkit-0.0.197.tar.gz", hash = "sha256:46af73c64afbe7117715b29d9e8d1bc8af70f33db99aa770082593886e18dcd6"},
 ]
 
 [package.dependencies]
@@ -1255,4 +1255,4 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "78c764c43100f80cdbbda86b73b81b2127b61bec7f4f320e56730fe60d8a4504"
+content-hash = "b9dcddee7be355e444641c44835a5a12df15bb1f36525a89b3df2542db6e6da7"
