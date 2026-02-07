@@ -106,7 +106,8 @@ def get_sources_for_request(connection, limit, offset, search=None):
 
 @app.route("/")
 def index():
-    html_text = get_view(INDEX_TEMPLATE, title="YAFR - Yet another feed reader")
+    config = connection.configurationentry.get_first()
+    html_text = get_view(INDEX_TEMPLATE, title=config.instance_title)
     return render_template_string(html_text)
 
 
@@ -289,6 +290,40 @@ def stats():
 
     html_text = get_view(STATS_TEMPLATE, title="Stats")
     return render_template_string(html_text, stats=stats_map)
+
+
+@app.route("/configuration", methods=["GET", "POST"])
+def configuration():
+    connection = DbConnection(table_name)
+
+    system = System.get_object()
+    config = connection.configurationentry.get_first()
+
+    if request.method == "POST":
+        title = request.form.get("instance_title", "")
+        description = request.form.get("instance_description", "")
+        remote_webtools_server_location = request.form.get("remote_webtools_server_location", "")
+
+        data = {}
+        if title != "None":
+            data["instance_title"] = title
+        if description != "None":
+            data["instance_description"] = description
+        if remote_webtools_server_location != "None":
+            data["remote_webtools_server_location"] = remote_webtools_server_location
+
+        connection.configurationentry.update_json_data(id=config.id, json_data=data)
+
+        html_text = get_view(OK_TEMPLATE, title="Changes applied")
+        return render_template_string(html_text)
+
+    instance_fields = {}
+    instance_fields["instance_title"] = config.instance_title
+    instance_fields["instance_description"] = config.instance_description
+    instance_fields["remote_webtools_server_location"] = config.remote_webtools_server_location
+
+    html_text = get_view(CONFIGURATION_TEMPLATE, title="Configuration")
+    return render_template_string(html_text, configuration=instance_fields)
 
 
 #### JSON

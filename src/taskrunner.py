@@ -48,8 +48,7 @@ class TaskRunner(object):
     def get_source_url(self, source):
         config = self.connection.configurationentry.get()
         try:
-            if False:
-                #if self.is_remote_server() or config.remote_webtools_server_location:
+            if self.is_remote_server() or self.is_config_remote_server():
                 # TODO dates are strings
                 location = config.remote_webtools_server_location
                 if not location:
@@ -66,6 +65,16 @@ class TaskRunner(object):
     
     def is_remote_server(self):
         return RemoteUrl.get_remote_server_location()
+
+    def is_config_remote_server(self):
+        config = self.connection.configurationentry.get()
+        if config.remote_webtools_server_location is None:
+            return False
+        if config.remote_webtools_server_location == "":
+            return False
+        if config.remote_webtools_server_location == "None":
+            return False
+        return True
 
     def on_done(self, response):
         pass

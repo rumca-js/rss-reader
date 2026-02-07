@@ -41,7 +41,8 @@ INDEX_TEMPLATE = """
   <li><a href="/remove-all-sources">Remove all sources</a>
   <li><a href="/remove-all-entries">Remove all entries</a>
   <li><a href="/entry-rules">Define entry rules</a>
-  <li><a href="/stats">Stats</a>
+  <li><a href="/stats">Status</a>
+  <li><a href="/configuration">Configuration</a>
 </ul>
 """
 
@@ -272,6 +273,23 @@ STATS_TEMPLATE = """
     <div>{{stat_name}} {{stat_counter}}</div>
 {% endfor %}
 """
+
+
+CONFIGURATION_TEMPLATE = """
+<div class="nav-buttons">
+    <button class="btn btn-primary" onclick="history.back()">Go back</button>
+    <a class="btn btn-primary" href="/">Home</a>
+</div>
+
+<form method="POST">
+{% for config_setting, config_value in configuration.items() %}
+    <div><label for="{{config_setting}}">{{config_setting}}</label></div>
+    <div><input type="search" id="{{config_setting}}" name="{{config_setting}}" value="{{config_value}}"/></div>
+{% endfor %}
+   <button type="submit">Search</button>
+</form>
+"""
+
 
 PROJECT_TEMPLATE = """
 <!DOCTYPE html>
