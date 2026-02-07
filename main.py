@@ -253,6 +253,8 @@ def remove_all_sources():
     connection = DbConnection(table_name)
 
     connection.sources_table.truncate()
+    connection.sourceoperationaleata.truncate()
+
     html_text = get_view(OK_TEMPLATE, title="Remove all sources")
     return render_template_string(html_text)
 
