@@ -126,7 +126,7 @@ def search():
 
 
 @app.route("/sources")
-def list_sources():
+def sources():
     connection = DbConnection(table_name)
 
     search = request.args.get("search")
