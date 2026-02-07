@@ -42,3 +42,6 @@ Allows to integrate your project with YAFR.
  - /api/entries - returns JSON about entries
  - /api/sources - returns JSON about sources
 
+# Host and Port
+
+Can be set up by YAFR\_HOST and YAFR\_PORT environment variables.

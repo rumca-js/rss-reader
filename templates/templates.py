@@ -176,6 +176,7 @@ ENTRIES_LIST_TEMPLATE = """
 </ul>
 """
 
+
 SOURCES_LIST_TEMPLATE = """
 <div class="nav-buttons">
     <button class="btn btn-primary" onclick="history.back()">Go back</button>
@@ -215,6 +216,20 @@ SOURCES_LIST_TEMPLATE = """
 </div>
 
 {{pagination_text}}
+"""
+
+
+SOURCE_TEMPLATE = """
+<div class="nav-buttons">
+    <button class="btn btn-primary" onclick="history.back()">Go back</button>
+    <a class="btn btn-primary" href="/">Home</a>
+</div>
+
+<h1>Source {{source_item.title}}</h1>
+
+<div>Title:{{source_item.id}}</div>
+<div>Url:{{source_item.url}}</div>
+<div>Thumbnail:{{source_item.thumbnail}}</div>
 """
 
 ADD_SOURCES_TEMPLATE = """

@@ -10,3 +10,5 @@ services:
       - 5000:5000
     environment:
       ALLOWED_IP: "192.168.0.1"
+      YAFR_HOST: "0.0.0.0"
+      YAFR_PORT: 5000

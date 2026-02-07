@@ -4,6 +4,7 @@ Simple RSS reader
 import os
 import sys
 import threading
+import argparse
 import shutil
 from pathlib import Path
 from flask import (
@@ -169,6 +170,21 @@ def sources():
     html_text = get_view(template_text, title="Sources")
 
     return render_template_string(html_text, sources=sources, sources_length=sources_len)
+
+
+@app.route("/source/<int:source_id>")
+def source(source_id):
+    connection = DbConnection(table_name)
+
+    source_item = connection.sources_table.get(id=source_id)
+
+    if source_item:
+        html_text = get_view(SOURCE_TEMPLATE, title=source_item.title)
+
+        return render_template_string(html_text, source_item=source_item)
+    else:
+        html_text = get_view(NOK_TEMPLATE, title="Cannot find source")
+        return render_template_string(html_text)
 
 
 @app.route("/add-sources", methods=["GET", "POST"])
@@ -401,12 +417,32 @@ def print_file(afile):
     return lines
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Run Flask server")
+    parser.add_argument(
+        "--host",
+        default="0.0.0.0",
+        help="Host address to bind the server (default: 0.0.0.0)"
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=5000,
+        help="Port to bind the server (default: 5000)"
+    )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Run Flask in debug mode"
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
     debug_mode = False
 
-    if len(sys.argv) > 1:
-        arg = sys.argv[1].lower()
-        debug_mode = arg in ["true", "1", "yes", "on"]
+    args = parse_args()
+    debug_mode = args.debug
 
     if (debug_mode and os.environ.get("WERKZEUG_RUN_MAIN") == "true") or not debug_mode:
         thread = threading.Thread(
@@ -417,4 +453,12 @@ if __name__ == "__main__":
 
         thread.start()
 
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    host = args.host
+    port = args.port
+
+    if "YAFR_HOST" in os.environ:
+        host = os.environ["YAFR_HOST"]
+    if "YAFR_PORT" in os.environ:
+        port = os.environ["YAFR_PORT"]
+
+    app.run(host=host, port=port, debug=False)
