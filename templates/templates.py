@@ -389,13 +389,7 @@ Unfortunately, no one can be told what the Matrix is. You have to see it for you
 
   <div class="text-center p-1" style="background-color: rgba(0, 0, 0, 0);">
       <span style="white-space: nowrap;">
-      Links repository
-      <a href="https://github.com/rumca-js/Internet-Places-Database">Internet-Places-Database</a>.
-      </span>
-      
-      <span style="white-space: nowrap;">
-      Captured by 
-      <a href="https://github.com/rumca-js/Django-link-archive">Django-link-archive</a>.
+      <a href="https://github.com/rumca-js/yafr/issues">Yafr server</a>.
       </span>
   </div>
 </footer>
