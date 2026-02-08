@@ -230,6 +230,14 @@ SOURCE_TEMPLATE = """
 <div>Search:<a href="/search?search=source_id={{source_item.id}}">Search</a></div>
 <div>Url:<a href="{{source_item.url}}">{{source_item.url}}</a></div>
 <div>Thumbnail:<a href="{{source_item.thumbnail}}">{{source_item.thumbnail}}</a></div>
+
+<div>Date fetched:{{source_op_data.date_fetched}}</div>
+
+<form method="POST">
+    <div><label for="fetch_period">Fetch period</label></div>
+    <div><input type="search" id="fetch_period" name="fetch_period" value="{{source_item.fetch_period}}"/></div>
+    <button type="submit">Add</button>
+</form>
 """
 
 ADD_SOURCES_TEMPLATE = """
@@ -240,7 +248,7 @@ ADD_SOURCES_TEMPLATE = """
 
 <h1>Add Sources</h1>
 
-<form method="post">
+<form method="POST">
     <p>One source URL per line:</p>
     <textarea name="sources">
 {{raw_data}}
@@ -267,7 +275,7 @@ DEFINE_ENTRY_RULES_TEMPLATE = """
 
 <h1>Define block URLs</h1>
 
-<form method="post">
+<form method="POST">
     <p>The URLs/feeds below will be blocked. One source URL per line:</p>
     <textarea name="sources">
 {{raw_data}}

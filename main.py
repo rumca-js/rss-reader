@@ -219,16 +219,28 @@ def sources():
     return render_template_string(html_text, sources=sources, sources_length=sources_len)
 
 
-@app.route("/source/<int:source_id>")
+@app.route("/source/<int:source_id>", methods=["GET", "POST"])
 def source(source_id):
     connection = DbConnection(table_name)
 
     source_item = connection.sources_table.get(id=source_id)
+    source_ops = list(connection.sourceoperationaleata.get_where({"source_obj_id" : source_id}))
+    source_op = None
+    if len(source_ops) > 0:
+        source_op = source_ops[0]
+
+    if request.method == "POST":
+        fetch_period = request.form.get("fetch_period", 0)
+        data = {}
+        data["fetch_period"] = fetch_period
+        connection.sources_table.update_json_data(id=source_op.id, json_data=data)
+        html_text = get_view(OK_TEMPLATE, title="Updated")
+        return render_template_string(html_text)
 
     if source_item:
         html_text = get_view(SOURCE_TEMPLATE, title=source_item.title)
 
-        return render_template_string(html_text, source_item=source_item)
+        return render_template_string(html_text, source_item=source_item, source_op_data = source_op)
     else:
         html_text = get_view(NOK_TEMPLATE, title="Cannot find source")
         return render_template_string(html_text)
