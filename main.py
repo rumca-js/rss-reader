@@ -17,6 +17,7 @@ from flask import (
    redirect,
    Response,
 )
+from urllib.parse import unquote
 
 from templates.templates import *
 from src.taskrunner import TaskRunner
@@ -56,13 +57,59 @@ class PagePagination:
         return page_size
 
 
+def parse_search(search, table):
+    """
+    Supports:
+      - "keyword"                  → search all fields
+      - "title=keyword"            → search specific field
+      - URL-encoded input supported (e.g. title%3Dkeyword)
+    """
+    if not search:
+        return None
+
+    search = unquote(search).strip()
+
+    searchable_fields = {
+        "title": table.c.title,
+        "description": table.c.description,
+        "link": table.c.link,
+        "source_url": table.c.source_url,
+        "source_id": table.c.source_id,
+    }
+
+    if "=" in search:
+        field, value = search.split("=", 1)
+        field = field.strip()
+        value = value.strip()
+
+        column = searchable_fields.get(field)
+        if column is not None and value:
+            return [column.ilike(f"%{value}%")]
+
+    return [
+        table.c.title.ilike(f"%{search}%"),
+        table.c.description.ilike(f"%{search}%"),
+        table.c.link.ilike(f"%{search}%"),
+        table.c.source_url.ilike(f"%{search}%"),
+    ]
+
+
 def get_entries_for_request(connection, limit, offset, search=None):
     table = connection.entries_table.get_table()
     order_by = [
       table.c.date_published.desc()
     ]
 
-    if search and search != "":
+    conditions = parse_search(search, table)
+
+    if conditions:
+        entries = list(connection.entries_table.get_where(limit=limit,
+                                                          offset=offset,
+                                                          order_by=order_by,
+                                                          conditions=conditions,
+                                                          ))
+
+    elif search and search != "":
         conditions = [
           table.c.title.ilike(f"%{search}%"),
           table.c.description.ilike(f"%{search}%"),

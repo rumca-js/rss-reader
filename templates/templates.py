@@ -194,7 +194,7 @@ SOURCES_LIST_TEMPLATE = """
 <div class="display-grid">
     {% for source in sources %}
         <div class="display-card">
-            <a href="{{ source.url }}">
+            <a href="/source/{{ source.id }}">
                 <img
                     src="{{ source.favicon }}"
                     alt="Source thumbnail"
@@ -208,7 +208,6 @@ SOURCES_LIST_TEMPLATE = """
             </div>
             <div class="source-title">
                <a href="/rss/{{source.id}}">RSS</a>
-               <a href="/remove-source?id={{source.id}}">[X]</a>
             </div>
 
         </div>
@@ -227,9 +226,10 @@ SOURCE_TEMPLATE = """
 
 <h1>Source {{source_item.title}}</h1>
 
-<div>Title:{{source_item.id}}</div>
-<div>Url:{{source_item.url}}</div>
-<div>Thumbnail:{{source_item.thumbnail}}</div>
+<div>ID:{{source_item.id}}</div>
+<div>Search:<a href="/search?search=source_id={{source_item.id}}">Search</a></div>
+<div>Url:<a href="{{source_item.url}}">{{source_item.url}}</a></div>
+<div>Thumbnail:<a href="{{source_item.thumbnail}}">{{source_item.thumbnail}}</a></div>
 """
 
 ADD_SOURCES_TEMPLATE = """
