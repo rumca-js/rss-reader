@@ -28,10 +28,10 @@ def entry_to_json(entry, with_id=False, source=None):
     json_entry["status_code"] = entry.status_code
     json_entry["thumbnail"] = entry.thumbnail
 
-    json_entry["source__title"] = ""
-    json_entry["source__url"] = entry.source_url
+    json_entry["source_title"] = ""
+    json_entry["source_url"] = entry.source_url
     if source:
-        json_entry["source__title"] = source.title
+        json_entry["source_title"] = source.title
         json_entry["source"] = source_to_json(source)
 
     json_entry["backgroundcolor"] = None
