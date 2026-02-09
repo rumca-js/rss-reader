@@ -11,7 +11,7 @@ class AppLogging(object):
     def __init__(self, connection):
         self.connection = connection
 
-    def create_entry(info_text, detail_text="", level=INFO, stack=False):
+    def create_entry(self, info_text, detail_text="", level=INFO, stack=False):
         if len(info_text) > 1900:
             info_text = info_text[:1900]
         if len(detail_text) > 2900:
@@ -25,14 +25,14 @@ class AppLogging(object):
 
         self.connection.applogging.insert_json_data(json_data)
 
-        AppLogging.cleanup_overflow()
+        self.cleanup_overflow()
 
-    def cleanup_overflow():
+    def cleanup_overflow(self):
         """
         Cleans up
         """
         count_elements = self.connection.applogging.count()
-        if count_elements > AppLogging.get_max_log_entries():
+        if count_elements > self.get_max_log_entries():
             diff = count_elements - AppLogging.get_max_log_entries()
 
             rows = self.connection.applogging.get_where(order_by=[self.connection.applogging.get_table().c.date.asc()], limit=diff)
@@ -42,17 +42,17 @@ class AppLogging(object):
     def get_max_log_entries():
         return 2000
 
-    def debug(info_text, detail_text="", stack=False):
+    def debug(self, info_text, detail_text="", stack=False):
         print(info_text)
 
-    def info(info_text, detail_text="", stack=False):
-        AppLogging.create_entry(info_text, detail_text=detail_text, level=AppLogging.INFO, stack=stack)
+    def info(self, info_text, detail_text="", stack=False):
+        self.create_entry(info_text, detail_text=detail_text, level=AppLogging.INFO, stack=stack)
 
-    def warning(info_text, detail_text="", stack=False):
-        AppLogging.create_entry(info_text, detail_text=detail_text, level=AppLogging.WARNING, stack=stack)
+    def warning(self, info_text, detail_text="", stack=False):
+        self.create_entry(info_text, detail_text=detail_text, level=AppLogging.WARNING, stack=stack)
 
-    def error(info_text, detail_text="", stack=False):
-        AppLogging.create_entry(info_text, detail_text=detail_text, level=AppLogging.ERROR, stack=stack)
+    def error(self, info_text, detail_text="", stack=False):
+        self.create_entry(info_text, detail_text=detail_text, level=AppLogging.ERROR, stack=stack)
 
-    def notify(info_text, detail_text="", stack=False):
-        AppLogging.create_entry(info_text, detail_text=detail_text, level=AppLogging.NOTIFICATION, stack=stack)
+    def notify(self, info_text, detail_text="", stack=False):
+        self.create_entry(info_text, detail_text=detail_text, level=AppLogging.NOTIFICATION, stack=stack)
