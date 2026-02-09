@@ -48,8 +48,10 @@ class TaskRunner(object):
                     entries.add(entry, source)
             else:
                 AppLogging.error("URL:{source.url} Response is invalid")
+                time.sleep(1)
         else:
             AppLogging.error("URL:{source.url} No response")
+            time.sleep(1)
 
     def get_source_url(self, source):
         config = self.connection.configurationentry.get()
