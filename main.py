@@ -25,6 +25,7 @@ from src.dbconnection import DbConnection
 from src.serializers import entry_to_json, source_to_json, source_and_entries_to_rss
 from src.controller import Controller
 from src.system import System
+from src.applogging import AppLogging
 
 
 page_size = 100
@@ -348,6 +349,21 @@ def remove_entry():
 
     html_text = get_view(OK_TEMPLATE, title="Remove entry")
     return render_template_string(html_text)
+
+
+@app.route("/logs", methods=["GET", "POST"])
+def logs():
+    connection = DbConnection(table_name)
+
+    html_text = get_view(LOGS_TEMPLATE, title="Logs")
+
+    order_by = [
+            connection.applogging.get_table().c.date.desc()
+            ]
+
+    logs = list(connection.applogging.get_where(order_by=order_by))
+
+    return render_template_string(html_text, logs=logs)
 
 
 @app.route("/stats")

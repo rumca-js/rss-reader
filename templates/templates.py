@@ -41,6 +41,7 @@ INDEX_TEMPLATE = """
   <li><a href="/remove-all-sources">Remove all sources</a>
   <li><a href="/remove-all-entries">Remove all entries</a>
   <li><a href="/entry-rules">Define entry rules</a>
+  <li><a href="/logs">Logs</a>
   <li><a href="/stats">Status</a>
   <li><a href="/configuration">Configuration</a>
 </ul>
@@ -285,6 +286,31 @@ DEFINE_ENTRY_RULES_TEMPLATE = """
     <br>
     <button type="submit">Save</button>
 </form>
+"""
+
+
+LOGS_TEMPLATE = """
+<div class="nav-buttons">
+    <button class="btn btn-primary" onclick="history.back()">Go back</button>
+    <a class="btn btn-primary" href="/">Home</a>
+</div>
+
+<h1>Logs {{sources_length}}</h1>
+
+<div>
+    {% for log in logs %}
+        <div>
+             ID:{{log.id}}, 
+             [{{log.date}}]
+             Level:{{log.level}}: {{log.info_text}},
+        </div>
+        <div>
+             {{log.detail_text}}
+        </div>
+    {% endfor %}
+</div>
+
+{{pagination_text}}
 """
 
 

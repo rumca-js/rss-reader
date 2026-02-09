@@ -32,7 +32,7 @@ class AppLogging(object):
         Cleans up
         """
         count_elements = self.connection.applogging.count()
-        if count_elements > self.get_max_log_entries():
+        if count_elements > AppLogging.get_max_log_entries():
             diff = count_elements - AppLogging.get_max_log_entries()
 
             rows = self.connection.applogging.get_where(order_by=[self.connection.applogging.get_table().c.date.asc()], limit=diff)
