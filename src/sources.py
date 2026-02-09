@@ -77,12 +77,13 @@ class Sources(object):
         source = self.get(id)
 
         self.delete_entries(source)
-        self.connection.sources_table.delete(id=id)
 
-        sources_data = SourceData()
-        sources_data.remove()
+        sources_data = SourceData(connection=self.connection)
+        sources_data.remove(source)
 
         self.remove_static_files(source)
+
+        self.connection.sources_table.delete(id=id)
 
     def get(self,id):
         return self.connection.sources_table.get(id=id)

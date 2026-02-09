@@ -358,14 +358,18 @@ def stats():
     sources_len = connection.sources_table.count()
     entry_rules_len = connection.entry_rules.count()
     sources_operational_len = connection.sourceoperationaleata.count()
+    applogging_len = connection.applogging.count()
 
     system = System.get_object()
 
     stats_map = {}
+
     stats_map["Entries"] = entries_len
     stats_map["Sources"] = sources_len
     stats_map["Sources Operational Data"] = sources_operational_len
     stats_map["Entry rules"] = entry_rules_len
+    stats_map["AppLogging"] = applogging_len
+
     stats_map["System state"] = system.is_system_ok()
 
     html_text = get_view(STATS_TEMPLATE, title="Stats")

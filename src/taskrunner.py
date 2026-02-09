@@ -10,6 +10,7 @@ from .sourcedata import SourceData
 from .sources import Sources
 from .entries import Entries
 from .sourcewriter import SourceWriter
+from .applogging import AppLogging
 
 
 class TaskRunner(object):
@@ -33,17 +34,22 @@ class TaskRunner(object):
             return
 
         response = url.get_response()
-        if response.is_valid():
-            source_properties = url.get_properties()
+        if response:
+            if response.is_valid():
+                source_properties = url.get_properties()
 
-            sources = Sources(self.connection)
-            sources.set(source.url, source_properties)
-            sources.delete_entries(source)
+                sources = Sources(self.connection)
+                sources.set(source.url, source_properties)
+                sources.delete_entries(source)
 
-            entries = url.get_entries()
-            for entry in entries:
-                entries = Entries(self.connection)
-                entries.add(entry, source)
+                entries = url.get_entries()
+                for entry in entries:
+                    entries = Entries(self.connection)
+                    entries.add(entry, source)
+            else:
+                AppLogging.error("URL:{source.url} Response is invalid")
+        else:
+            AppLogging.error("URL:{source.url} No response")
 
     def get_source_url(self, source):
         config = self.connection.configurationentry.get()
@@ -192,7 +198,7 @@ class TaskRunner(object):
 
         if self.controller.is_entry_rule_triggered(source.url):
             print("rule triggered")
-            sources = Sources(self.connection)
+            sources = Sources(connection=self.connection)
             sources.delete(id=source.id)
             return
 

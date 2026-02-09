@@ -10,6 +10,7 @@ from linkarchivetools.utils.reflected import (
    ReflectedEntryRules,
    ReflectedConfigurationEntry,
    ReflectedSourceOperationalData,
+   ReflectedGenericTable,
 )
 
 
@@ -30,6 +31,7 @@ class DbConnection(object):
         self.entry_rules = ReflectedEntryRules(engine=self.engine, connection=self.connection)
         self.configurationentry = ReflectedConfigurationEntry(engine=self.engine, connection=self.connection)
         self.sourceoperationaleata = ReflectedSourceOperationalData(engine=self.engine, connection=self.connection)
+        self.applogging = ReflectedGenericTable(engine=self.engine, connection=self.connection, table_name="applogging")
 
     def create_engine(db_file):
         engine = create_engine(f"sqlite:///{db_file}", connect_args={"check_same_thread": False})
