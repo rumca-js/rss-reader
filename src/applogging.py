@@ -42,5 +42,17 @@ class AppLogging(object):
     def get_max_log_entries():
         return 2000
 
+    def debug(info_text, detail_text="", stack=False):
+        print(info_text)
+
     def info(info_text, detail_text="", stack=False):
         AppLogging.create_entry(info_text, detail_text=detail_text, level=AppLogging.INFO, stack=stack)
+
+    def warning(info_text, detail_text="", stack=False):
+        AppLogging.create_entry(info_text, detail_text=detail_text, level=AppLogging.WARNING, stack=stack)
+
+    def error(info_text, detail_text="", stack=False):
+        AppLogging.create_entry(info_text, detail_text=detail_text, level=AppLogging.ERROR, stack=stack)
+
+    def notify(info_text, detail_text="", stack=False):
+        AppLogging.create_entry(info_text, detail_text=detail_text, level=AppLogging.NOTIFICATION, stack=stack)
