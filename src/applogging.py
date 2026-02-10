@@ -56,3 +56,8 @@ class AppLogging(object):
 
     def notify(self, info_text, detail_text="", stack=False):
         self.create_entry(info_text, detail_text=detail_text, level=AppLogging.NOTIFICATION, stack=stack)
+
+    def exc(self, exception, info_text, detail_text="", stack=False):
+        info_text += str(exception)
+
+        self.create_entry(info_text, detail_text=detail_text, level=AppLogging.ERROR, stack=stack)

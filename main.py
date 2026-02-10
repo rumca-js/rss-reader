@@ -256,7 +256,10 @@ def add_sources():
 
         controller = Controller(connection)
         controller.add_sources_text(raw_text)
-        return redirect(url_for("sources"))
+
+        template_html = STR_TEMPLATE.replace("{template_string}", "Wait until sources are added")
+        html_text = get_view(template_html, title="OK")
+        return render_template_string(html_text)
 
     html_text = get_view(ADD_SOURCES_TEMPLATE, title="Add sources")
     return render_template_string(html_text, raw_data="")
@@ -403,12 +406,15 @@ def configuration():
         title = request.form.get("instance_title", "")
         description = request.form.get("instance_description", "")
         remote_webtools_server_location = request.form.get("remote_webtools_server_location", "")
+        display_type = request.form.get("display_type", "")
 
         data = {}
         if title != "None":
             data["instance_title"] = title
         if description != "None":
             data["instance_description"] = description
+        if display_type != "None":
+            data["display_type"] = display_type
         if remote_webtools_server_location != "None":
             data["remote_webtools_server_location"] = remote_webtools_server_location
 
@@ -420,6 +426,7 @@ def configuration():
     instance_fields = {}
     instance_fields["instance_title"] = config.instance_title
     instance_fields["instance_description"] = config.instance_description
+    instance_fields["display_type"] = config.display_type
     instance_fields["remote_webtools_server_location"] = config.remote_webtools_server_location
 
     html_text = get_view(CONFIGURATION_TEMPLATE, title="Configuration")

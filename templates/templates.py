@@ -33,7 +33,7 @@ def get_view(body, title=""):
 
 
 INDEX_TEMPLATE = """
-<h1>Entrypoints</h1>
+<h1>YAFR - Yet Another Feed Reader</h1>
 <ul>
   <li><a href="/search">Search</a>
   <li><a href="/sources">Sources</a>
@@ -93,6 +93,14 @@ NOK_TEMPLATE = """
     NOK
 </body>
 </html>
+"""
+
+STR_TEMPLATE = """
+    <div class="nav-buttons">
+        <button class="btn btn-primary" onclick="history.back()">Go back</button>
+        <a class="btn btn-primary" href="/">Home</a>
+    </div>
+    {template_string}
 """
 
 

@@ -124,39 +124,61 @@ class TaskRunner(object):
         print(f"Sources: {sources_len}")
 
     def process_sources(self):
+        self.connection = DbConnection(self.table_name)
+        self.controller = Controller(connection=self.connection)
         self.add_due_sources()
+        self.controller.close()
+        self.connection.close()
 
         print("Starting reading")
         while True:
-            system = System.get_object()
+            try:
+                system = System.get_object()
 
-            self.start_reading = False
+                self.start_reading = False
 
-            source_ids = self.get_sources_ids()
+                source_ids = self.get_sources_ids()
 
-            for index, source_id in enumerate(source_ids):
+                no_source_read = True
+                for index, source_id in enumerate(source_ids):
+                    self.connection = DbConnection(self.table_name)
+                    self.controller = Controller(connection=self.connection)
+
+                    if self.process_source(index, source_id, len(source_ids)):
+                        no_source_read = False
+
+                    self.controller.close()
+                    self.connection.close()
+                    system.set_thread_ok()
+
+                system.set_thread_ok()
+
+                if no_source_read:
+                    self.waiting_due = datetime.now() + self.get_due_time()
+                    self.wait_for_due_time()
+
                 self.connection = DbConnection(self.table_name)
                 self.controller = Controller(connection=self.connection)
+                self.add_due_sources()
 
-                self.process_source(index, source_id, len(source_ids))
+                entries = Entries(self.connection)
+                entries.cleanup()
+                sources_data = SourceData(self.connection)
+                sources_data.cleanup()
 
                 self.controller.close()
                 self.connection.close()
-                system.set_thread_ok()
-
-            self.waiting_due = datetime.now() + self.get_due_time()
-            system.set_thread_ok()
-            self.wait_for_due_time()
+            except Exception as E:
+                AppLogging.error("Exception {}".format(str(E)))
+                time.sleep(1)
 
     def get_due_time(self):
-        return timedelta(hours = 1)
+        return timedelta(minutes = 10)
 
     def wait_for_due_time(self):
         system = System.get_object()
         while True:
             system.set_thread_ok()
-
-            self.add_due_sources()
 
             if self.start_reading:
                 return True
@@ -192,23 +214,23 @@ class TaskRunner(object):
 
         if not source:
             print("Could not find source")
-            return
+            return False
 
         if not source.enabled:
             print("Not enabled")
-            return
+            return False
 
         if self.controller.is_entry_rule_triggered(source.url):
             print("rule triggered")
             sources = Sources(connection=self.connection)
             sources.delete(id=source.id)
-            return
+            return False
 
         sources_data = SourceData(self.connection)
 
         if not sources_data.is_update_needed(source):
             print("Update not needed")
-            return
+            return False
 
         print(f"{index}/{source_count} {source.url} {source.title}: Reading")
         self.check_source(source)
@@ -219,10 +241,9 @@ class TaskRunner(object):
         print(f"{index}/{source_count} {source.url} {source.title}: Reading DONE")
         time.sleep(1)
 
-    def add_due_sources(self):
-        self.connection = DbConnection(self.table_name)
-        self.controller = Controller(connection=self.connection)
+        return True
 
+    def add_due_sources(self):
         status = False
 
         sources = self.controller.get_sources_to_add()
@@ -231,6 +252,4 @@ class TaskRunner(object):
             self.controller.add_sources(sources)
             status = True
 
-        self.controller.close()
-        self.connection.close()
         return status

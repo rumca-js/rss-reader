@@ -40,3 +40,14 @@ class SourceData(object):
 
     def remove(self, source):
         self.connection.sourceoperationaleata.delete_where({"source_obj_id" : source.id})
+
+    def cleanup(self):
+        ids_to_remove = []
+        op_datas = self.connection.sourceoperationaleata.get_where()
+        for op_data in op_datas:
+            source = self.connection.sources_table.get(op_data.source_obj_id)
+            if not source:
+                ids_to_remove.append(op_data.id)
+
+        for id in ids_to_remove:
+            self.connection.sourceoperationaleata.delete(op_data.id)
