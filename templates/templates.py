@@ -33,7 +33,7 @@ def get_view(body, title=""):
 
 
 INDEX_TEMPLATE = """
-<h1>YAFR - Yet Another Feed Reader</h1>
+<h1>YAFR - Yet Another Feed Reader v{{version}}</h1>
 <ul>
   <li><a href="/search">Search</a>
   <li><a href="/sources">Sources</a>
@@ -247,7 +247,9 @@ SOURCE_TEMPLATE = """
 <form method="POST">
     <div><label for="fetch_period">Fetch period</label></div>
     <div><input type="search" id="fetch_period" name="fetch_period" value="{{source_item.fetch_period}}"/></div>
-    <button type="submit">Add</button>
+    <div><label for="xpath">Link acceptance 're' expression</label></div>
+    <div><input type="search" id="xpath" name="xpath" value="{{source_item.xpath}}"/></div>
+    <button type="submit">Save</button>
 </form>
 """
 

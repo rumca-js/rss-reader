@@ -28,6 +28,15 @@ from src.system import System
 from src.applogging import AppLogging
 
 
+__version__ = "0.0.0"
+path = Path("pyproject.toml")
+text = path.read_text()
+for line in text.split("\n"):
+    wh = line.find("version")
+    if wh >= 0:
+        __version__ = line[11:-1]
+
+
 page_size = 100
 
 table_name = Path("data") / "table.db"
@@ -158,7 +167,7 @@ def index():
     connection = DbConnection(table_name)
     config = connection.configurationentry.get_first()
     html_text = get_view(INDEX_TEMPLATE, title=config.instance_title)
-    return render_template_string(html_text)
+    return render_template_string(html_text, version=__version__)
 
 
 @app.route('/scripts/<path:filename>')
@@ -231,9 +240,8 @@ def source(source_id):
         source_op = source_ops[0]
 
     if request.method == "POST":
-        fetch_period = request.form.get("fetch_period", 0)
-        data = {}
-        data["fetch_period"] = fetch_period
+        data["fetch_period"] = request.form.get("fetch_period", 0)
+        data["xpath"] = request.form.get("xpath", "")
         connection.sources_table.update_json_data(id=source_op.id, json_data=data)
         html_text = get_view(OK_TEMPLATE, title="Updated")
         return render_template_string(html_text)

@@ -1,3 +1,4 @@
+import re
 import time
 from datetime import datetime, timedelta
 from webtoolkit import BaseUrl, RemoteUrl
@@ -44,14 +45,30 @@ class TaskRunner(object):
 
                 entries = url.get_entries()
                 for entry in entries:
-                    entries = Entries(self.connection)
-                    entries.add(entry, source)
+                    if self.is_entry_ok(entry, source):
+                        entries = Entries(self.connection)
+                        entries.add(entry, source)
             else:
                 AppLogging(self.connection).error(f"URL:{source.url} Response is invalid")
                 time.sleep(1)
         else:
             AppLogging(self.connection).error(f"URL:{source.url} No response")
             time.sleep(1)
+
+    def is_entry_ok(self, entry, source):
+        link = entry.get("link")
+        if not link:
+            return False
+
+        if source.xpath:
+            try:
+                if re.search(source.xpath, link) is None:
+                    return False
+            except re.error as E:
+                AppLogging.exc(E, "Incorrect pattern")
+                return False
+
+        return True
 
     def get_source_url(self, source):
         config = self.connection.configurationentry.get()
