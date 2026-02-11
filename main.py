@@ -182,7 +182,13 @@ def styles(filename):
 
 @app.route("/search")
 def search():
-    return render_template_string(PROJECT_TEMPLATE, title="Yafr search")
+    connection = DbConnection(table_name)
+    config = connection.configurationentry.get_first()
+
+    default_values = {}
+    default_values["view_display_type"] = config.display_type
+
+    return render_template_string(PROJECT_TEMPLATE, title="Yafr search", default_values=default_values)
 
 
 @app.route("/sources")

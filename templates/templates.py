@@ -376,7 +376,14 @@ PROJECT_TEMPLATE = """
         <script src="scripts/ui.js?i=86"></script>
         <script src="scripts/project.js?i=86"></script>
         <script src="scripts/search.js?i=86"></script>
-
+        <script>
+         function reset() {
+           {% for setting_key, setting_value in default_values.items() %}
+             {{setting_key}} = "{{setting_value}}";
+           {% endfor %}
+         }
+         reset();
+        </script>
     </head>
 <body style="padding-bottom: 6em;">
 
