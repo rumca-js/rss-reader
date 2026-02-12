@@ -246,7 +246,8 @@ class TaskRunner(object):
         sources_data = SourceData(self.connection)
 
         if not sources_data.is_update_needed(source):
-            print("Update not needed")
+            now = datetime.now()
+            print(f"{source.url}: Update not needed @ {now}")
             return False
 
         print(f"{index}/{source_count} {source.url} {source.title}: Reading")
