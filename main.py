@@ -325,6 +325,16 @@ def remove_all_entries():
     return render_template_string(html_text)
 
 
+@app.route("/remove-all-logs")
+def remove_all_logs():
+    connection = DbConnection(table_name)
+
+    connection.applogging.truncate()
+
+    html_text = get_view(OK_TEMPLATE, title="Remove all logs")
+    return render_template_string(html_text)
+
+
 @app.route("/remove-all-sources")
 def remove_all_sources():
     connection = DbConnection(table_name)

@@ -50,10 +50,10 @@ class TaskRunner(object):
                         entries.add(entry, source)
             else:
                 AppLogging(self.connection).error(f"URL:{source.url} Response is invalid")
-                time.sleep(1)
+                time.sleep(5)
         else:
             AppLogging(self.connection).error(f"URL:{source.url} No response")
-            time.sleep(1)
+            time.sleep(5)
 
     def is_entry_ok(self, entry, source):
         link = entry.get("link")
@@ -65,7 +65,7 @@ class TaskRunner(object):
                 if re.search(source.xpath, link) is None:
                     return False
             except re.error as E:
-                AppLogging.exc(E, "Incorrect pattern")
+                AppLogging(self.connection).exc(E, "Incorrect pattern")
                 return False
 
         return True
@@ -84,7 +84,7 @@ class TaskRunner(object):
                 url = BaseUrl(url=source.url)
             return url
         except:
-            print(f"Removing invalid source:{source.url}")
+            AppLogging(self.connection).notify(f"Removing invalid source:{source.url}")
             sources = Sources(self.connection)
             sources.delete(id=source.id)
     
@@ -164,6 +164,8 @@ class TaskRunner(object):
                     if self.process_source(index, source_id, len(source_ids)):
                         no_source_read = False
 
+                    self.add_due_sources()
+
                     self.controller.close()
                     self.connection.close()
                     system.set_thread_ok()
@@ -176,7 +178,6 @@ class TaskRunner(object):
 
                 self.connection = DbConnection(self.table_name)
                 self.controller = Controller(connection=self.connection)
-                self.add_due_sources()
 
                 entries = Entries(self.connection)
                 entries.cleanup()
@@ -186,7 +187,7 @@ class TaskRunner(object):
                 self.controller.close()
                 self.connection.close()
             except Exception as E:
-                AppLogging.error("Exception {}".format(str(E)))
+                AppLogging(self.connection).error("Exception {}".format(str(E)))
                 time.sleep(1)
 
     def get_due_time(self):
@@ -230,15 +231,14 @@ class TaskRunner(object):
         source = sources.get(id=source_id)
 
         if not source:
-            print("Could not find source")
+            AppLogging(self.connection).debug(f"Source id: {source_id} Could not find source")
             return False
 
         if not source.enabled:
-            print("Not enabled")
+            AppLogging(self.connection).debug(f"Source id: {source_id} Source is not enabled")
             return False
 
         if self.controller.is_entry_rule_triggered(source.url):
-            print("rule triggered")
             sources = Sources(connection=self.connection)
             sources.delete(id=source.id)
             return False
@@ -247,16 +247,16 @@ class TaskRunner(object):
 
         if not sources_data.is_update_needed(source):
             now = datetime.now()
-            print(f"{source.url}: Update not needed @ {now}")
+            AppLogging(self.connection).debug(f"{source.url}: Update not needed @ {now}")
             return False
 
-        print(f"{index}/{source_count} {source.url} {source.title}: Reading")
+        AppLogging(self.connection).debug(f"{index}/{source_count} {source.url} {source.title}: Reading")
         self.check_source(source)
 
         #writer = SourceWriter(connection=self.connection, source=source)
         #writer.write()
 
-        print(f"{index}/{source_count} {source.url} {source.title}: Reading DONE")
+        AppLogging(self.connection).debug(f"{index}/{source_count} {source.url} {source.title}: Reading DONE")
         time.sleep(1)
 
         return True

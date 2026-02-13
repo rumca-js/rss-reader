@@ -40,7 +40,7 @@ INDEX_TEMPLATE = """
   <li><a href="/add-sources">Add sources</a>
   <li><a href="/remove-all-sources">Remove all sources</a>
   <li><a href="/remove-all-entries">Remove all entries</a>
-  <li><a href="/entry-rules">Define entry rules</a>
+  <li><a href="/entry-rules">Define block rules</a>
   <li><a href="/logs">Logs</a>
   <li><a href="/stats">Status</a>
   <li><a href="/configuration">Configuration</a>
@@ -287,6 +287,7 @@ DEFINE_ENTRY_RULES_TEMPLATE = """
 </div>
 
 <h1>Define block URLs</h1>
+Will block sources, and entries.
 
 <form method="POST">
     <p>The URLs/feeds below will be blocked. One source URL per line:</p>
@@ -303,6 +304,7 @@ LOGS_TEMPLATE = """
 <div class="nav-buttons">
     <button class="btn btn-primary" onclick="history.back()">Go back</button>
     <a class="btn btn-primary" href="/">Home</a>
+    <a class="btn btn-primary" href="/remove-all-logs">Clear</a>
 </div>
 
 <h1>Logs {{sources_length}}</h1>

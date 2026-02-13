@@ -651,9 +651,10 @@ function getEntryOpParameters(entry) {
        `;
     }
 
-    text += `
-    <div>Language: ${entry.language}</div>
-    `;
+    if (entry.language) {
+       text += `<div>Language: ${entry.language}</div>
+      `;
+    }
 
     if (entry.age) {
        text += `
@@ -700,6 +701,12 @@ function getEntryOpParameters(entry) {
     }
     if (entry.thumbnail != null) {
        text += `<div><a href="${entry.thumbnail}">Thumbnail</a></div>`;
+    }
+    if (entry.source_title != null) {
+       text += `<div>Source title: ${entry.source_title}</div>`;
+    }
+    if (entry.source_url != null) {
+       text += `<div>Source url: ${entry.source_url}</div>`;
     }
 
     return text;
@@ -1594,14 +1601,15 @@ function entryGalleryTemplateMobileContents(entry, show_icons = true, small_icon
     {
        thumbnail = getEntryThumbnailOrFavicon(entry);
     }
-    let thumbnail_text = `
-        <img src="${thumbnail}" style="width:100%; max-height:100%; object-fit:cover"/>
-        ${badge_text}
-        ${badge_star}
-        ${badge_age}
-        ${badge_dead}
-        ${badge_read_later}
+    let thumbnail_text = "";
+    if (thumbnail)
+    {
+       thumbnail_text = `
+           <div style="flex: 0 0 70%; flex-shrink: 0;flex-grow:0;max-height:70%">
+              <img src="${thumbnail}" style="width:100%; max-height:100%; object-fit:cover"/>
+           </div>
     `;
+    }
 
     let language_text = "";
     if (entry.language != null) {
@@ -1610,9 +1618,12 @@ function entryGalleryTemplateMobileContents(entry, show_icons = true, small_icon
 
     return `
             <div style="display: flex; flex-direction:column; align-content:normal; height:100%">
-                <div style="flex: 0 0 70%; flex-shrink: 0;flex-grow:0;max-height:70%">
-                    ${thumbnail_text}
-                </div>
+                 ${thumbnail_text}
+                 ${badge_text}
+                 ${badge_star}
+                 ${badge_age}
+                 ${badge_dead}
+                 ${badge_read_later}
                 <div
 		    style="flex: 0 0 30%;
 		           flex-shrink: 0;

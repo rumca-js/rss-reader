@@ -2,6 +2,7 @@
 let all_entries = null;
 let entries_length = 0;
 let search_suggestions = [];
+let original_title = "";
 
 
 function getFileName() {
@@ -19,6 +20,30 @@ function getFileName() {
         file_name = adir + file_name
 
     return file_name;
+}
+
+
+function getPageNumber() {
+    return parseInt(getQueryParam("page")) || 1;
+}
+
+
+function setTitle() {
+    let page_number = getQueryParam("page");
+
+    const search_input = $("#searchInput").val();
+    if (search_input.trim() != "") {
+        if (page_number != null) {
+           document.title = search_input + " " + page_number;
+	}
+        else
+	{
+           document.title = search_input;
+	}
+    }
+    else {
+        document.title = original_title;
+    }
 }
 
 
@@ -45,7 +70,7 @@ function sortAndFilter() {
 
     entries_length = entries.length;
 
-    let page_num = parseInt(getQueryParam("page")) || 1;
+    let page_num = getPageNumber();
     let page_size = default_page_size;
 
     let start_index = (page_num-1) * page_size;
@@ -53,6 +78,8 @@ function sortAndFilter() {
 
     object_list_data.entries = entries.slice(start_index, end_index);
 }
+
+
 
 
 function performSearchJSON() {
@@ -98,11 +125,8 @@ function performSearchDb() {
 
 
 function performSearchAPI() {
-    let page_num = parseInt(getQueryParam("page")) || 1;
+    let page_num = getPageNumber();
     const userInput = $("#searchInput").val();
-    if (userInput.trim() != "") {
-        document.title = userInput;
-    }
 
     getEntriesJson(function(data) {
        object_list_data = data;
@@ -116,11 +140,9 @@ function performSearchAPI() {
 function performSearch() {
     let file_name = getFileName();
 
-    const userInput = $("#searchInput").val();
-    if (userInput.trim() != "") {
-        document.title = userInput;
-    }
+    setTitle();
 
+    const userInput = $("#searchInput").val();
     const currentUrl = new URL(window.location.href);
     currentUrl.searchParams.set('search', userInput);
     window.history.pushState({}, '', currentUrl);
@@ -239,6 +261,7 @@ async function initWorker() {
 
 async function Initialize() {
     let file_name = getFileName();
+    original_title = document.title;
 
     $('#searchInput').prop('disabled', true);
 
