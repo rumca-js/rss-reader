@@ -72,7 +72,7 @@ class TaskRunner(object):
 
     def get_source_url(self, source):
         request = PageRequestObject(source.url)
-        request.timeout = 300
+        request.timeout_s = 300
 
         config = self.connection.configurationentry.get()
         try:
