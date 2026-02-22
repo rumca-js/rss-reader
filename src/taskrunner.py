@@ -71,6 +71,9 @@ class TaskRunner(object):
         return True
 
     def get_source_url(self, source):
+        request = PageRequestObject(source.url)
+        request.timeout = 300
+
         config = self.connection.configurationentry.get()
         try:
             if self.is_remote_server() or self.is_config_remote_server():
@@ -79,9 +82,9 @@ class TaskRunner(object):
                 if not location:
                     location = RemoteUrl.get_remote_server_location()
 
-                url = RemoteUrl(url=source.url, remote_server_location=location)
+                url = RemoteUrl(request=request, remote_server_location=location)
             else:
-                url = BaseUrl(url=source.url)
+                url = BaseUrl(request=request)
             return url
         except:
             AppLogging(self.connection).notify(f"Removing invalid source:{source.url}")
