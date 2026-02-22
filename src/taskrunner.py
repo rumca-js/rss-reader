@@ -1,7 +1,7 @@
 import re
 import time
 from datetime import datetime, timedelta
-from webtoolkit import BaseUrl, RemoteUrl
+from webtoolkit import BaseUrl, RemoteUrl, PageRequestObject
 import traceback
 
 from .dbconnection import DbConnection
